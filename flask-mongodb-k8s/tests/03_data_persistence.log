@@ -1,0 +1,28 @@
+﻿=== DATA PERSISTENCE VERIFICATION TEST ===
+Timestamp: 2026-11-19 00:51:42
+Cluster Namespace: flask-app
+Target URL: http://localhost:5000
+Unique Test ID: persistence-712421697
+
+[1] INSERT TEST DOCUMENT (Pre-deletion):
+Payload: {"test_id":"persistence-712421697","message":"persistence-verified-across-mongodb-pod-deletion"}
+Response: {
+    "status":  "Data inserted"
+}
+
+[2] VERIFY DOCUMENT IN DATABASE (Pre-deletion):
+Data: {"value":[{"source":"minikube-k8s","status":"success"},{"assignment":"k8s-intern","author":"avinash","verified_at":"2026-11-19T00:42:26.3468542+05:30"},{"assignment":"k8s-intern","author":"avinash","verified_at":"2026-11-19T00:42:48.9111234+05:30"},{"test":"persistence-confirmed","val":"42"},{"message":"persistence-verified-across-mongodb-pod-deletion","test_id":"persistence-1166515514"},{"message":"persistence-verified-across-mongodb-pod-deletion","test_id":"persistence-712421697"}],"Count":6}
+
+[3] DELETE MONGODB-0 POD:
+pod "mongodb-0" deleted from flask-app namespace
+
+[4] WAIT FOR POD RECREATION & READINESS:
+pod/mongodb-0 condition met
+NAME        READY   STATUS    RESTARTS   AGE mongodb-0   1/1     Running   0          29s
+
+[5] VERIFY DATA IN DATABASE (Post-deletion & recreation):
+Data: {"value":[{"source":"minikube-k8s","status":"success"},{"assignment":"k8s-intern","author":"avinash","verified_at":"2026-11-19T00:42:26.3468542+05:30"},{"assignment":"k8s-intern","author":"avinash","verified_at":"2026-11-19T00:42:48.9111234+05:30"},{"test":"persistence-confirmed","val":"42"},{"message":"persistence-verified-across-mongodb-pod-deletion","test_id":"persistence-1166515514"},{"message":"persistence-verified-across-mongodb-pod-deletion","test_id":"persistence-712421697"}],"Count":6}
+
+[RESULT]
+Document with test_id 'persistence-712421697' successfully survived pod deletion and was retrieved after stateful restart.
+Storage volume (mongo-pv mounted at /data/db) verified fully persistent across restarts!

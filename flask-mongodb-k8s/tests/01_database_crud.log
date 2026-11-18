@@ -1,0 +1,18 @@
+﻿=== DATABASE CRUD VERIFICATION ===
+Timestamp: 2026-11-19 00:42:48
+Target URL: http://127.0.0.1:63888
+
+[1] Health Check:
+HTTP/1.1 200 OK Server: gunicorn Date: Wed, 18 Nov 2026 19:12:48 GMT Connection: keep-alive Content-Type: application/json Content-Length: 44  {"database":"connected","status":"healthy"}
+
+[2] Root Endpoint:
+HTTP/1.1 200 OK Server: gunicorn Date: Wed, 18 Nov 2026 19:12:48 GMT Connection: keep-alive Content-Type: text/html; charset=utf-8 Content-Length: 73  Welcome to the Flask app! The current time is: 2026-11-18 19:12:48.904368
+
+[3] POST /data (Insert Document):
+HTTP/1.1 201 CREATED Server: gunicorn Date: Wed, 18 Nov 2026 19:12:48 GMT Connection: keep-alive Content-Type: application/json Content-Length: 27  {"status":"Data inserted"}
+
+[4] GET /data (Retrieve Documents):
+HTTP/1.1 200 OK Server: gunicorn Date: Wed, 18 Nov 2026 19:12:49 GMT Connection: keep-alive Content-Type: application/json Content-Length: 241  [{"source":"minikube-k8s","status":"success"},{"assignment":"k8s-intern","author":"avinash","verified_at":"2026-11-19T00:42:26.3468542+05:30"},{"assignment":"k8s-intern","author":"avinash","verified_at":"2026-11-19T00:42:48.9111234+05:30"}]
+
+[5] POST /data with Invalid JSON (Negative Test - Expect HTTP 400):
+HTTP/1.1 400 BAD REQUEST Server: gunicorn Date: Wed, 18 Nov 2026 19:12:49 GMT Connection: keep-alive Content-Type: application/json Content-Length: 44  {"error":"Invalid or missing JSON payload"}

@@ -1,0 +1,414 @@
+﻿=== HORIZONTAL POD AUTOSCALER (HPA) DYNAMIC LOAD TEST ===
+Start Time: 2026-11-19 00:52:43
+
+Cluster Target: Deployment/flask-deployment (min: 2, max: 5, targetCPU: 70%)
+
+
+--- [STAGE 1] BASELINE STATUS ---
+
+NAME        REFERENCE                     TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+
+flask-hpa   Deployment/flask-deployment   cpu: 96%/70%   2         5         3          12m
+
+
+
+NAME                                READY   STATUS    RESTARTS      AGE
+
+flask-deployment-565b8ccdfd-4kz2c   1/1     Running   0             46s
+
+flask-deployment-565b8ccdfd-9z9bj   1/1     Running   2 (69s ago)   13m
+
+flask-deployment-565b8ccdfd-v2r5z   1/1     Running   0             41s
+
+
+
+--- [STAGE 2] LAUNCHING LOAD GENERATOR (busybox wget loop) ---
+
+Load generator running 8 concurrent wget loops against http://flask-service:5000/
+
+--- [STAGE 3] MONITORING SCALE-UP UNDER HIGH TRAFFIC ---
+
+
+[T+10s] HPA Status:
+NAME        REFERENCE                     TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+
+flask-hpa   Deployment/flask-deployment   cpu: 96%/70%   2         5         3          12m
+Pod Status:
+NAME                                READY   STATUS    RESTARTS      AGE
+
+flask-deployment-565b8ccdfd-4kz2c   1/1     Running   0             58s
+
+flask-deployment-565b8ccdfd-9z9bj   1/1     Running   2 (81s ago)   14m
+
+flask-deployment-565b8ccdfd-v2r5z   1/1     Running   0             53s
+Top Metrics:
+NAME                                CPU(cores)   MEMORY(bytes)   
+
+flask-deployment-565b8ccdfd-4kz2c   40m          69Mi            
+
+flask-deployment-565b8ccdfd-9z9bj   6m           69Mi            
+
+flask-deployment-565b8ccdfd-v2r5z   84m          68Mi
+
+
+
+[T+20s] HPA Status:
+NAME        REFERENCE                     TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+
+flask-hpa   Deployment/flask-deployment   cpu: 3%/70%   2         5         3          12m
+Pod Status:
+NAME                                READY   STATUS    RESTARTS      AGE
+
+flask-deployment-565b8ccdfd-4kz2c   1/1     Running   0             71s
+
+flask-deployment-565b8ccdfd-9z9bj   1/1     Running   2 (94s ago)   14m
+
+flask-deployment-565b8ccdfd-v2r5z   1/1     Running   0             66s
+Top Metrics:
+NAME                                CPU(cores)   MEMORY(bytes)   
+
+flask-deployment-565b8ccdfd-4kz2c   40m          69Mi            
+
+flask-deployment-565b8ccdfd-9z9bj   6m           69Mi            
+
+flask-deployment-565b8ccdfd-v2r5z   84m          68Mi
+
+
+
+[T+30s] HPA Status:
+NAME        REFERENCE                     TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+
+flask-hpa   Deployment/flask-deployment   cpu: 3%/70%   2         5         3          12m
+Pod Status:
+NAME                                READY   STATUS    RESTARTS       AGE
+
+flask-deployment-565b8ccdfd-4kz2c   1/1     Running   0              82s
+
+flask-deployment-565b8ccdfd-9z9bj   1/1     Running   2 (105s ago)   14m
+
+flask-deployment-565b8ccdfd-v2r5z   1/1     Running   0              77s
+Top Metrics:
+NAME                                CPU(cores)   MEMORY(bytes)   
+
+flask-deployment-565b8ccdfd-4kz2c   40m          69Mi            
+
+flask-deployment-565b8ccdfd-9z9bj   6m           69Mi            
+
+flask-deployment-565b8ccdfd-v2r5z   84m          68Mi
+
+
+
+[T+40s] HPA Status:
+NAME        REFERENCE                     TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+
+flask-hpa   Deployment/flask-deployment   cpu: 3%/70%   2         5         3          12m
+Pod Status:
+NAME                                READY   STATUS    RESTARTS       AGE
+
+flask-deployment-565b8ccdfd-4kz2c   1/1     Running   0              94s
+
+flask-deployment-565b8ccdfd-9z9bj   1/1     Running   2 (117s ago)   14m
+
+flask-deployment-565b8ccdfd-v2r5z   1/1     Running   0              89s
+Top Metrics:
+NAME                                CPU(cores)   MEMORY(bytes)   
+
+flask-deployment-565b8ccdfd-4kz2c   40m          69Mi            
+
+flask-deployment-565b8ccdfd-9z9bj   6m           69Mi            
+
+flask-deployment-565b8ccdfd-v2r5z   84m          68Mi
+
+
+
+[T+50s] HPA Status:
+NAME        REFERENCE                     TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+
+flask-hpa   Deployment/flask-deployment   cpu: 3%/70%   2         5         3          13m
+Pod Status:
+NAME                                READY   STATUS    RESTARTS       AGE
+
+flask-deployment-565b8ccdfd-4kz2c   1/1     Running   0              105s
+
+flask-deployment-565b8ccdfd-9z9bj   1/1     Running   2 (2m8s ago)   14m
+
+flask-deployment-565b8ccdfd-v2r5z   1/1     Running   0              100s
+Top Metrics:
+NAME                                CPU(cores)   MEMORY(bytes)   
+
+flask-deployment-565b8ccdfd-4kz2c   40m          69Mi            
+
+flask-deployment-565b8ccdfd-9z9bj   6m           69Mi            
+
+flask-deployment-565b8ccdfd-v2r5z   84m          68Mi
+
+
+
+[T+60s] HPA Status:
+NAME        REFERENCE                     TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+
+flask-hpa   Deployment/flask-deployment   cpu: 3%/70%   2         5         3          13m
+Pod Status:
+NAME                                READY   STATUS        RESTARTS        AGE
+
+flask-deployment-565b8ccdfd-4kz2c   1/1     Running       0               117s
+
+flask-deployment-565b8ccdfd-9z9bj   1/1     Terminating   2 (2m20s ago)   14m
+
+flask-deployment-565b8ccdfd-v2r5z   1/1     Running       0               112s
+Top Metrics:
+NAME                                CPU(cores)   MEMORY(bytes)   
+
+flask-deployment-565b8ccdfd-4kz2c   95m          70Mi            
+
+flask-deployment-565b8ccdfd-9z9bj   87m          70Mi            
+
+flask-deployment-565b8ccdfd-v2r5z   84m          70Mi
+
+
+
+[T+70s] HPA Status:
+NAME        REFERENCE                     TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+
+flask-hpa   Deployment/flask-deployment   cpu: 44%/70%   2         5         2          13m
+Pod Status:
+NAME                                READY   STATUS    RESTARTS   AGE
+
+flask-deployment-565b8ccdfd-4kz2c   1/1     Running   0          2m8s
+
+flask-deployment-565b8ccdfd-v2r5z   1/1     Running   0          2m3s
+Top Metrics:
+NAME                                CPU(cores)   MEMORY(bytes)   
+
+flask-deployment-565b8ccdfd-4kz2c   95m          70Mi            
+
+flask-deployment-565b8ccdfd-v2r5z   84m          70Mi
+
+
+
+[T+80s] HPA Status:
+NAME        REFERENCE                     TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+
+flask-hpa   Deployment/flask-deployment   cpu: 44%/70%   2         5         2          13m
+Pod Status:
+NAME                                READY   STATUS    RESTARTS   AGE
+
+flask-deployment-565b8ccdfd-4kz2c   1/1     Running   0          2m20s
+
+flask-deployment-565b8ccdfd-v2r5z   1/1     Running   0          2m15s
+Top Metrics:
+NAME                                CPU(cores)   MEMORY(bytes)   
+
+flask-deployment-565b8ccdfd-4kz2c   95m          70Mi            
+
+flask-deployment-565b8ccdfd-v2r5z   84m          70Mi
+
+
+
+[T+90s] HPA Status:
+NAME        REFERENCE                     TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+
+flask-hpa   Deployment/flask-deployment   cpu: 44%/70%   2         5         2          13m
+Pod Status:
+NAME                                READY   STATUS    RESTARTS   AGE
+
+flask-deployment-565b8ccdfd-4kz2c   1/1     Running   0          2m31s
+
+flask-deployment-565b8ccdfd-v2r5z   1/1     Running   0          2m26s
+Top Metrics:
+NAME                                CPU(cores)   MEMORY(bytes)   
+
+flask-deployment-565b8ccdfd-4kz2c   95m          70Mi            
+
+flask-deployment-565b8ccdfd-v2r5z   84m          70Mi
+
+
+--- [STAGE 4] STOPPING LOAD GENERATOR & COOL-DOWN MONITORING ---
+
+Load generator terminated. Entering stabilization cool-down window (scaleDown.stabilizationWindowSeconds: 60s)...
+
+
+[CoolDown T+10s] HPA Status:
+NAME        REFERENCE                     TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+
+flask-hpa   Deployment/flask-deployment   cpu: 44%/70%   2         5         2          13m
+Pod Status:
+NAME                                READY   STATUS    RESTARTS   AGE
+
+flask-deployment-565b8ccdfd-4kz2c   0/1     Running   0          2m42s
+
+flask-deployment-565b8ccdfd-v2r5z   0/1     Running   0          2m37s
+Top Metrics:
+NAME                                CPU(cores)   MEMORY(bytes)   
+
+flask-deployment-565b8ccdfd-4kz2c   95m          70Mi            
+
+flask-deployment-565b8ccdfd-v2r5z   84m          70Mi
+
+
+
+[CoolDown T+20s] HPA Status:
+NAME        REFERENCE                     TARGETS              MINPODS   MAXPODS   REPLICAS   AGE
+
+flask-hpa   Deployment/flask-deployment   cpu: <unknown>/70%   2         5         2          14m
+Pod Status:
+NAME                                READY   STATUS    RESTARTS     AGE
+
+flask-deployment-565b8ccdfd-4kz2c   0/1     Running   1 (3s ago)   2m52s
+
+flask-deployment-565b8ccdfd-v2r5z   1/1     Running   0            2m47s
+Top Metrics:
+NAME                                CPU(cores)   MEMORY(bytes)   
+
+flask-deployment-565b8ccdfd-4kz2c   95m          70Mi            
+
+flask-deployment-565b8ccdfd-v2r5z   84m          70Mi
+
+
+
+[CoolDown T+30s] HPA Status:
+NAME        REFERENCE                     TARGETS              MINPODS   MAXPODS   REPLICAS   AGE
+
+flask-hpa   Deployment/flask-deployment   cpu: <unknown>/70%   2         5         2          14m
+Pod Status:
+NAME                                READY   STATUS    RESTARTS      AGE
+
+flask-deployment-565b8ccdfd-4kz2c   1/1     Running   1 (14s ago)   3m3s
+
+flask-deployment-565b8ccdfd-v2r5z   1/1     Running   0             2m58s
+Top Metrics:
+NAME                                CPU(cores)   MEMORY(bytes)   
+
+flask-deployment-565b8ccdfd-v2r5z   99m          70Mi
+
+
+
+[CoolDown T+40s] HPA Status:
+NAME        REFERENCE                     TARGETS              MINPODS   MAXPODS   REPLICAS   AGE
+
+flask-hpa   Deployment/flask-deployment   cpu: <unknown>/70%   2         5         2          14m
+Pod Status:
+NAME                                READY   STATUS    RESTARTS      AGE
+
+flask-deployment-565b8ccdfd-4kz2c   1/1     Running   1 (24s ago)   3m13s
+
+flask-deployment-565b8ccdfd-v2r5z   1/1     Running   0             3m8s
+Top Metrics:
+NAME                                CPU(cores)   MEMORY(bytes)   
+
+flask-deployment-565b8ccdfd-v2r5z   99m          70Mi
+
+
+
+[CoolDown T+50s] HPA Status:
+NAME        REFERENCE                     TARGETS              MINPODS   MAXPODS   REPLICAS   AGE
+
+flask-hpa   Deployment/flask-deployment   cpu: <unknown>/70%   2         5         2          14m
+Pod Status:
+NAME                                READY   STATUS    RESTARTS      AGE
+
+flask-deployment-565b8ccdfd-4kz2c   1/1     Running   1 (35s ago)   3m24s
+
+flask-deployment-565b8ccdfd-v2r5z   1/1     Running   0             3m19s
+Top Metrics:
+NAME                                CPU(cores)   MEMORY(bytes)   
+
+flask-deployment-565b8ccdfd-v2r5z   99m          70Mi
+
+
+
+[CoolDown T+60s] HPA Status:
+NAME        REFERENCE                     TARGETS              MINPODS   MAXPODS   REPLICAS   AGE
+
+flask-hpa   Deployment/flask-deployment   cpu: <unknown>/70%   2         5         2          14m
+Pod Status:
+NAME                                READY   STATUS    RESTARTS      AGE
+
+flask-deployment-565b8ccdfd-4kz2c   1/1     Running   1 (45s ago)   3m34s
+
+flask-deployment-565b8ccdfd-v2r5z   1/1     Running   0             3m29s
+Top Metrics:
+NAME                                CPU(cores)   MEMORY(bytes)   
+
+flask-deployment-565b8ccdfd-v2r5z   99m          70Mi
+
+
+
+[CoolDown T+70s] HPA Status:
+NAME        REFERENCE                     TARGETS              MINPODS   MAXPODS   REPLICAS   AGE
+
+flask-hpa   Deployment/flask-deployment   cpu: <unknown>/70%   2         5         2          15m
+Pod Status:
+NAME                                READY   STATUS    RESTARTS      AGE
+
+flask-deployment-565b8ccdfd-4kz2c   1/1     Running   1 (56s ago)   3m45s
+
+flask-deployment-565b8ccdfd-v2r5z   1/1     Running   0             3m40s
+Top Metrics:
+NAME                                CPU(cores)   MEMORY(bytes)   
+
+flask-deployment-565b8ccdfd-v2r5z   99m          70Mi
+
+
+
+[CoolDown T+80s] HPA Status:
+NAME        REFERENCE                     TARGETS              MINPODS   MAXPODS   REPLICAS   AGE
+
+flask-hpa   Deployment/flask-deployment   cpu: <unknown>/70%   2         5         2          15m
+Pod Status:
+NAME                                READY   STATUS    RESTARTS      AGE
+
+flask-deployment-565b8ccdfd-4kz2c   1/1     Running   1 (66s ago)   3m55s
+
+flask-deployment-565b8ccdfd-v2r5z   1/1     Running   0             3m50s
+Top Metrics:
+NAME                                CPU(cores)   MEMORY(bytes)   
+
+flask-deployment-565b8ccdfd-4kz2c   6m           69Mi            
+
+flask-deployment-565b8ccdfd-v2r5z   5m           69Mi
+
+
+
+[CoolDown T+90s] HPA Status:
+NAME        REFERENCE                     TARGETS              MINPODS   MAXPODS   REPLICAS   AGE
+
+flask-hpa   Deployment/flask-deployment   cpu: <unknown>/70%   2         5         2          15m
+Pod Status:
+NAME                                READY   STATUS    RESTARTS      AGE
+
+flask-deployment-565b8ccdfd-4kz2c   1/1     Running   1 (77s ago)   4m6s
+
+flask-deployment-565b8ccdfd-v2r5z   1/1     Running   0             4m1s
+Top Metrics:
+NAME                                CPU(cores)   MEMORY(bytes)   
+
+flask-deployment-565b8ccdfd-4kz2c   6m           69Mi            
+
+flask-deployment-565b8ccdfd-v2r5z   5m           69Mi
+
+
+
+[CoolDown T+100s] HPA Status:
+NAME        REFERENCE                     TARGETS              MINPODS   MAXPODS   REPLICAS   AGE
+
+flask-hpa   Deployment/flask-deployment   cpu: <unknown>/70%   2         5         2          15m
+Pod Status:
+NAME                                READY   STATUS    RESTARTS      AGE
+
+flask-deployment-565b8ccdfd-4kz2c   1/1     Running   1 (87s ago)   4m16s
+
+flask-deployment-565b8ccdfd-v2r5z   1/1     Running   0             4m11s
+Top Metrics:
+NAME                                CPU(cores)   MEMORY(bytes)   
+
+flask-deployment-565b8ccdfd-4kz2c   6m           69Mi            
+
+flask-deployment-565b8ccdfd-v2r5z   5m           69Mi
+
+
+
+=== HPA LOAD TEST COMPLETED ===
+
+End Time: 2026-11-19 00:56:14
+

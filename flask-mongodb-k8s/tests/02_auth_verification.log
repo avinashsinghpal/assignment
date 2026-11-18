@@ -1,0 +1,17 @@
+﻿=== MONGODB AUTHENTICATION VERIFICATION TEST ===
+Timestamp: 2026-11-19 00:48:20
+Executed From: flask-deployment pod (in-cluster client)
+Target: mongodb-service.flask-app.svc.cluster.local:27017
+=== SCENARIO 1: CONNECT WITHOUT CREDENTIALS ===
+Result: REJECTED AS EXPECTED
+Exception Type: OperationFailure
+Details: Command find requires authentication, full error: {'ok': 0.0, 'errmsg': 'Command find requires authentication', 'code': 13, 'codeName': 'Unauthorized'}
+
+=== SCENARIO 2: CONNECT WITH WRONG PASSWORD ===
+Result: REJECTED AS EXPECTED
+Exception Type: OperationFailure
+Details: Authentication failed., full error: {'ok': 0.0, 'errmsg': 'Authentication failed.', 'code': 18, 'codeName': 'AuthenticationFailed'}
+
+=== SCENARIO 3: CONNECT WITH CORRECT CREDENTIALS FROM K8S SECRET ===
+Result: AUTHENTICATED SUCCESSFULLY
+Retrieved Document: {'source': 'minikube-k8s', 'status': 'success'}
