@@ -1,414 +1,1561 @@
-﻿=== HORIZONTAL POD AUTOSCALER (HPA) DYNAMIC LOAD TEST ===
-Start Time: 2026-11-19 00:52:43
+================================================================================
+KUBERNETES HORIZONTAL POD AUTOSCALER (HPA) VERIFICATION TEST
+Namespace: flask-app
+Target Service: flask-service:5000 (/data)
+HPA Configuration:
+  - Metric: CPU Utilization
+  - Target: 70% of CPU Request (70% of 200m = 140m per pod)
+  - Min Replicas: 2
+  - Max Replicas: 5
+Test Initiated: 2026-11-19 01:49:39
+================================================================================
 
-Cluster Target: Deployment/flask-deployment (min: 2, max: 5, targetCPU: 70%)
-
-
---- [STAGE 1] BASELINE STATUS ---
-
-NAME        REFERENCE                     TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
-
-flask-hpa   Deployment/flask-deployment   cpu: 96%/70%   2         5         3          12m
-
-
-
-NAME                                READY   STATUS    RESTARTS      AGE
-
-flask-deployment-565b8ccdfd-4kz2c   1/1     Running   0             46s
-
-flask-deployment-565b8ccdfd-9z9bj   1/1     Running   2 (69s ago)   13m
-
-flask-deployment-565b8ccdfd-v2r5z   1/1     Running   0             41s
-
-
-
---- [STAGE 2] LAUNCHING LOAD GENERATOR (busybox wget loop) ---
-
-Load generator running 8 concurrent wget loops against http://flask-service:5000/
-
---- [STAGE 3] MONITORING SCALE-UP UNDER HIGH TRAFFIC ---
-
-
-[T+10s] HPA Status:
-NAME        REFERENCE                     TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
-
-flask-hpa   Deployment/flask-deployment   cpu: 96%/70%   2         5         3          12m
-Pod Status:
-NAME                                READY   STATUS    RESTARTS      AGE
-
-flask-deployment-565b8ccdfd-4kz2c   1/1     Running   0             58s
-
-flask-deployment-565b8ccdfd-9z9bj   1/1     Running   2 (81s ago)   14m
-
-flask-deployment-565b8ccdfd-v2r5z   1/1     Running   0             53s
-Top Metrics:
-NAME                                CPU(cores)   MEMORY(bytes)   
-
-flask-deployment-565b8ccdfd-4kz2c   40m          69Mi            
-
-flask-deployment-565b8ccdfd-9z9bj   6m           69Mi            
-
-flask-deployment-565b8ccdfd-v2r5z   84m          68Mi
-
-
-
-[T+20s] HPA Status:
+======================================================
+[2026-11-19 01:49:39] SNAPSHOT - Baseline (idle) #1
+======================================================
+--- HPA STATUS ---
 NAME        REFERENCE                     TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+flask-hpa   Deployment/flask-deployment   cpu: 2%/70%   2         5         2          43m
 
-flask-hpa   Deployment/flask-deployment   cpu: 3%/70%   2         5         3          12m
-Pod Status:
-NAME                                READY   STATUS    RESTARTS      AGE
-
-flask-deployment-565b8ccdfd-4kz2c   1/1     Running   0             71s
-
-flask-deployment-565b8ccdfd-9z9bj   1/1     Running   2 (94s ago)   14m
-
-flask-deployment-565b8ccdfd-v2r5z   1/1     Running   0             66s
-Top Metrics:
-NAME                                CPU(cores)   MEMORY(bytes)   
-
-flask-deployment-565b8ccdfd-4kz2c   40m          69Mi            
-
-flask-deployment-565b8ccdfd-9z9bj   6m           69Mi            
-
-flask-deployment-565b8ccdfd-v2r5z   84m          68Mi
-
-
-
-[T+30s] HPA Status:
-NAME        REFERENCE                     TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
-
-flask-hpa   Deployment/flask-deployment   cpu: 3%/70%   2         5         3          12m
-Pod Status:
+--- PODS (flask-app namespace) ---
 NAME                                READY   STATUS    RESTARTS       AGE
+flask-deployment-587884f456-d95sl   1/1     Running   0              2m35s
+flask-deployment-587884f456-qjhhm   1/1     Running   0              3m2s
+mongodb-0                           1/1     Running   5 (3m1s ago)   38m
 
-flask-deployment-565b8ccdfd-4kz2c   1/1     Running   0              82s
-
-flask-deployment-565b8ccdfd-9z9bj   1/1     Running   2 (105s ago)   14m
-
-flask-deployment-565b8ccdfd-v2r5z   1/1     Running   0              77s
-Top Metrics:
+--- RESOURCE UTILIZATION (top pods) ---
 NAME                                CPU(cores)   MEMORY(bytes)   
-
-flask-deployment-565b8ccdfd-4kz2c   40m          69Mi            
-
-flask-deployment-565b8ccdfd-9z9bj   6m           69Mi            
-
-flask-deployment-565b8ccdfd-v2r5z   84m          68Mi
+flask-deployment-587884f456-d95sl   5m           69Mi            
+flask-deployment-587884f456-qjhhm   4m           70Mi            
+mongodb-0                           224m         234Mi           
 
 
-
-[T+40s] HPA Status:
+======================================================
+[2026-11-19 01:49:49] SNAPSHOT - Baseline (idle) #2
+======================================================
+--- HPA STATUS ---
 NAME        REFERENCE                     TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+flask-hpa   Deployment/flask-deployment   cpu: 2%/70%   2         5         2          43m
 
-flask-hpa   Deployment/flask-deployment   cpu: 3%/70%   2         5         3          12m
-Pod Status:
+--- PODS (flask-app namespace) ---
+NAME                                READY   STATUS    RESTARTS        AGE
+flask-deployment-587884f456-d95sl   1/1     Running   0               2m46s
+flask-deployment-587884f456-qjhhm   1/1     Running   0               3m13s
+mongodb-0                           1/1     Running   5 (3m12s ago)   38m
+
+--- RESOURCE UTILIZATION (top pods) ---
+NAME                                CPU(cores)   MEMORY(bytes)   
+flask-deployment-587884f456-d95sl   6m           69Mi            
+flask-deployment-587884f456-qjhhm   4m           69Mi            
+mongodb-0                           271m         142Mi           
+
+
+======================================================
+[2026-11-19 01:50:00] SNAPSHOT - Baseline (idle) #3
+======================================================
+--- HPA STATUS ---
+NAME        REFERENCE                     TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+flask-hpa   Deployment/flask-deployment   cpu: 2%/70%   2         5         2          44m
+
+--- PODS (flask-app namespace) ---
+NAME                                READY   STATUS    RESTARTS        AGE
+flask-deployment-587884f456-d95sl   1/1     Running   0               2m56s
+flask-deployment-587884f456-qjhhm   1/1     Running   0               3m23s
+mongodb-0                           1/1     Running   5 (3m22s ago)   38m
+
+--- RESOURCE UTILIZATION (top pods) ---
+NAME                                CPU(cores)   MEMORY(bytes)   
+flask-deployment-587884f456-d95sl   6m           69Mi            
+flask-deployment-587884f456-qjhhm   4m           69Mi            
+mongodb-0                           271m         142Mi           
+
+
+>>> [2026-11-19 01:50:10] ACTION: Creating load-gen deployment (8 replicas) <<<
+
+
+======================================================
+[2026-11-19 01:50:20] SNAPSHOT - Load Gen (8 replicas) #1
+======================================================
+--- HPA STATUS ---
+NAME        REFERENCE                     TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+flask-hpa   Deployment/flask-deployment   cpu: 2%/70%   2         5         2          44m
+
+--- PODS (flask-app namespace) ---
+NAME                                READY   STATUS              RESTARTS        AGE
+flask-deployment-587884f456-d95sl   1/1     Running             0               3m17s
+flask-deployment-587884f456-qjhhm   1/1     Running             0               3m44s
+load-gen-c46b68cff-8crx7            0/1     ContainerCreating   0               11s
+load-gen-c46b68cff-hzh4h            0/1     ContainerCreating   0               11s
+load-gen-c46b68cff-lnnfx            0/1     ContainerCreating   0               11s
+load-gen-c46b68cff-p28gm            0/1     ContainerCreating   0               10s
+load-gen-c46b68cff-qkn9c            0/1     ContainerCreating   0               11s
+load-gen-c46b68cff-tbbvz            1/1     Running             0               11s
+load-gen-c46b68cff-wqvqt            0/1     ContainerCreating   0               11s
+load-gen-c46b68cff-xfjq9            1/1     Running             0               11s
+mongodb-0                           1/1     Running             5 (3m43s ago)   38m
+
+--- RESOURCE UTILIZATION (top pods) ---
+NAME                                CPU(cores)   MEMORY(bytes)   
+flask-deployment-587884f456-d95sl   6m           69Mi            
+flask-deployment-587884f456-qjhhm   4m           69Mi            
+mongodb-0                           271m         142Mi           
+
+
+======================================================
+[2026-11-19 01:50:32] SNAPSHOT - Load Gen (8 replicas) #2
+======================================================
+--- HPA STATUS ---
+NAME        REFERENCE                     TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+flask-hpa   Deployment/flask-deployment   cpu: 2%/70%   2         5         2          44m
+
+--- PODS (flask-app namespace) ---
+NAME                                READY   STATUS              RESTARTS        AGE
+flask-deployment-587884f456-d95sl   1/1     Running             0               3m28s
+flask-deployment-587884f456-qjhhm   1/1     Running             0               3m55s
+load-gen-c46b68cff-8crx7            1/1     Running             0               22s
+load-gen-c46b68cff-hzh4h            1/1     Running             0               22s
+load-gen-c46b68cff-lnnfx            0/1     ContainerCreating   0               22s
+load-gen-c46b68cff-p28gm            0/1     ContainerCreating   0               21s
+load-gen-c46b68cff-qkn9c            1/1     Running             0               22s
+load-gen-c46b68cff-tbbvz            1/1     Running             0               22s
+load-gen-c46b68cff-wqvqt            1/1     Running             0               22s
+load-gen-c46b68cff-xfjq9            1/1     Running             0               22s
+mongodb-0                           1/1     Running             5 (3m54s ago)   39m
+
+--- RESOURCE UTILIZATION (top pods) ---
+NAME                                CPU(cores)   MEMORY(bytes)   
+flask-deployment-587884f456-d95sl   6m           69Mi            
+flask-deployment-587884f456-qjhhm   4m           69Mi            
+mongodb-0                           271m         142Mi           
+
+
+======================================================
+[2026-11-19 01:50:43] SNAPSHOT - Load Gen (8 replicas) #3
+======================================================
+--- HPA STATUS ---
+NAME        REFERENCE                     TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+flask-hpa   Deployment/flask-deployment   cpu: 2%/70%   2         5         2          44m
+
+--- PODS (flask-app namespace) ---
 NAME                                READY   STATUS    RESTARTS       AGE
+flask-deployment-587884f456-d95sl   1/1     Running   0              3m40s
+flask-deployment-587884f456-qjhhm   1/1     Running   0              4m7s
+load-gen-c46b68cff-8crx7            1/1     Running   0              34s
+load-gen-c46b68cff-hzh4h            1/1     Running   0              34s
+load-gen-c46b68cff-lnnfx            1/1     Running   0              34s
+load-gen-c46b68cff-p28gm            1/1     Running   0              33s
+load-gen-c46b68cff-qkn9c            1/1     Running   0              34s
+load-gen-c46b68cff-tbbvz            1/1     Running   0              34s
+load-gen-c46b68cff-wqvqt            1/1     Running   0              34s
+load-gen-c46b68cff-xfjq9            1/1     Running   0              34s
+mongodb-0                           1/1     Running   5 (4m6s ago)   39m
 
-flask-deployment-565b8ccdfd-4kz2c   1/1     Running   0              94s
-
-flask-deployment-565b8ccdfd-9z9bj   1/1     Running   2 (117s ago)   14m
-
-flask-deployment-565b8ccdfd-v2r5z   1/1     Running   0              89s
-Top Metrics:
+--- RESOURCE UTILIZATION (top pods) ---
 NAME                                CPU(cores)   MEMORY(bytes)   
+flask-deployment-587884f456-d95sl   65m          70Mi            
+flask-deployment-587884f456-qjhhm   56m          70Mi            
+load-gen-c46b68cff-8crx7            88m          1Mi             
+load-gen-c46b68cff-hzh4h            54m          1Mi             
+load-gen-c46b68cff-qkn9c            67m          0Mi             
+load-gen-c46b68cff-tbbvz            103m         2Mi             
+load-gen-c46b68cff-wqvqt            77m          1Mi             
+load-gen-c46b68cff-xfjq9            105m         0Mi             
+mongodb-0                           286m         448Mi           
 
-flask-deployment-565b8ccdfd-4kz2c   40m          69Mi            
 
-flask-deployment-565b8ccdfd-9z9bj   6m           69Mi            
+======================================================
+[2026-11-19 01:50:54] SNAPSHOT - Load Gen (8 replicas) #4
+======================================================
+--- HPA STATUS ---
+NAME        REFERENCE                     TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+flask-hpa   Deployment/flask-deployment   cpu: 30%/70%   2         5         2          44m
 
-flask-deployment-565b8ccdfd-v2r5z   84m          68Mi
+--- PODS (flask-app namespace) ---
+NAME                                READY   STATUS    RESTARTS        AGE
+flask-deployment-587884f456-d95sl   1/1     Running   0               3m51s
+flask-deployment-587884f456-qjhhm   1/1     Running   0               4m18s
+load-gen-c46b68cff-8crx7            1/1     Running   0               45s
+load-gen-c46b68cff-hzh4h            1/1     Running   0               45s
+load-gen-c46b68cff-lnnfx            1/1     Running   0               45s
+load-gen-c46b68cff-p28gm            1/1     Running   0               44s
+load-gen-c46b68cff-qkn9c            1/1     Running   0               45s
+load-gen-c46b68cff-tbbvz            1/1     Running   0               45s
+load-gen-c46b68cff-wqvqt            1/1     Running   0               45s
+load-gen-c46b68cff-xfjq9            1/1     Running   0               45s
+mongodb-0                           1/1     Running   5 (4m17s ago)   39m
+
+--- RESOURCE UTILIZATION (top pods) ---
+NAME                                CPU(cores)   MEMORY(bytes)   
+flask-deployment-587884f456-d95sl   65m          70Mi            
+flask-deployment-587884f456-qjhhm   56m          70Mi            
+load-gen-c46b68cff-8crx7            88m          1Mi             
+load-gen-c46b68cff-hzh4h            54m          1Mi             
+load-gen-c46b68cff-qkn9c            67m          0Mi             
+load-gen-c46b68cff-tbbvz            103m         2Mi             
+load-gen-c46b68cff-wqvqt            77m          1Mi             
+load-gen-c46b68cff-xfjq9            105m         0Mi             
+mongodb-0                           286m         448Mi           
 
 
+======================================================
+[2026-11-19 01:51:06] SNAPSHOT - Load Gen (8 replicas) #5
+======================================================
+--- HPA STATUS ---
+NAME        REFERENCE                     TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+flask-hpa   Deployment/flask-deployment   cpu: 30%/70%   2         5         2          45m
 
-[T+50s] HPA Status:
-NAME        REFERENCE                     TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+--- PODS (flask-app namespace) ---
+NAME                                READY   STATUS    RESTARTS        AGE
+flask-deployment-587884f456-d95sl   1/1     Running   0               4m3s
+flask-deployment-587884f456-qjhhm   1/1     Running   0               4m30s
+load-gen-c46b68cff-8crx7            1/1     Running   0               57s
+load-gen-c46b68cff-hzh4h            1/1     Running   0               57s
+load-gen-c46b68cff-lnnfx            1/1     Running   0               57s
+load-gen-c46b68cff-p28gm            1/1     Running   0               56s
+load-gen-c46b68cff-qkn9c            1/1     Running   0               57s
+load-gen-c46b68cff-tbbvz            1/1     Running   0               57s
+load-gen-c46b68cff-wqvqt            1/1     Running   0               57s
+load-gen-c46b68cff-xfjq9            1/1     Running   0               57s
+mongodb-0                           1/1     Running   5 (4m29s ago)   39m
 
-flask-hpa   Deployment/flask-deployment   cpu: 3%/70%   2         5         3          13m
-Pod Status:
+--- RESOURCE UTILIZATION (top pods) ---
+NAME                                CPU(cores)   MEMORY(bytes)   
+flask-deployment-587884f456-d95sl   65m          70Mi            
+flask-deployment-587884f456-qjhhm   56m          70Mi            
+load-gen-c46b68cff-8crx7            88m          1Mi             
+load-gen-c46b68cff-hzh4h            54m          1Mi             
+load-gen-c46b68cff-qkn9c            67m          0Mi             
+load-gen-c46b68cff-tbbvz            103m         2Mi             
+load-gen-c46b68cff-wqvqt            77m          1Mi             
+load-gen-c46b68cff-xfjq9            105m         0Mi             
+mongodb-0                           286m         448Mi           
+
+
+======================================================
+[2026-11-19 01:51:17] SNAPSHOT - Load Gen (8 replicas) #6
+======================================================
+--- HPA STATUS ---
+NAME        REFERENCE                     TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+flask-hpa   Deployment/flask-deployment   cpu: 30%/70%   2         5         2          45m
+
+--- PODS (flask-app namespace) ---
+NAME                                READY   STATUS    RESTARTS        AGE
+flask-deployment-587884f456-d95sl   1/1     Running   0               4m14s
+flask-deployment-587884f456-qjhhm   1/1     Running   0               4m41s
+load-gen-c46b68cff-8crx7            1/1     Running   0               68s
+load-gen-c46b68cff-hzh4h            1/1     Running   0               68s
+load-gen-c46b68cff-lnnfx            1/1     Running   0               68s
+load-gen-c46b68cff-p28gm            1/1     Running   0               67s
+load-gen-c46b68cff-qkn9c            1/1     Running   0               68s
+load-gen-c46b68cff-tbbvz            1/1     Running   0               68s
+load-gen-c46b68cff-wqvqt            1/1     Running   0               68s
+load-gen-c46b68cff-xfjq9            1/1     Running   0               68s
+mongodb-0                           1/1     Running   5 (4m40s ago)   39m
+
+--- RESOURCE UTILIZATION (top pods) ---
+NAME                                CPU(cores)   MEMORY(bytes)   
+flask-deployment-587884f456-d95sl   65m          70Mi            
+flask-deployment-587884f456-qjhhm   56m          70Mi            
+load-gen-c46b68cff-8crx7            88m          1Mi             
+load-gen-c46b68cff-hzh4h            54m          1Mi             
+load-gen-c46b68cff-qkn9c            67m          0Mi             
+load-gen-c46b68cff-tbbvz            103m         2Mi             
+load-gen-c46b68cff-wqvqt            77m          1Mi             
+load-gen-c46b68cff-xfjq9            105m         0Mi             
+mongodb-0                           286m         448Mi           
+
+
+======================================================
+[2026-11-19 01:51:28] SNAPSHOT - Load Gen (8 replicas) #7
+======================================================
+--- HPA STATUS ---
+NAME        REFERENCE                     TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+flask-hpa   Deployment/flask-deployment   cpu: 30%/70%   2         5         2          45m
+
+--- PODS (flask-app namespace) ---
+NAME                                READY   STATUS    RESTARTS        AGE
+flask-deployment-587884f456-d95sl   1/1     Running   0               4m25s
+flask-deployment-587884f456-qjhhm   1/1     Running   0               4m52s
+load-gen-c46b68cff-8crx7            1/1     Running   0               79s
+load-gen-c46b68cff-hzh4h            1/1     Running   0               79s
+load-gen-c46b68cff-lnnfx            1/1     Running   0               79s
+load-gen-c46b68cff-p28gm            1/1     Running   0               78s
+load-gen-c46b68cff-qkn9c            1/1     Running   0               79s
+load-gen-c46b68cff-tbbvz            1/1     Running   0               79s
+load-gen-c46b68cff-wqvqt            1/1     Running   0               79s
+load-gen-c46b68cff-xfjq9            1/1     Running   0               79s
+mongodb-0                           1/1     Running   5 (4m51s ago)   40m
+
+--- RESOURCE UTILIZATION (top pods) ---
+NAME                                CPU(cores)   MEMORY(bytes)   
+flask-deployment-587884f456-d95sl   65m          70Mi            
+flask-deployment-587884f456-qjhhm   56m          70Mi            
+load-gen-c46b68cff-8crx7            88m          1Mi             
+load-gen-c46b68cff-hzh4h            54m          1Mi             
+load-gen-c46b68cff-qkn9c            67m          0Mi             
+load-gen-c46b68cff-tbbvz            103m         2Mi             
+load-gen-c46b68cff-wqvqt            77m          1Mi             
+load-gen-c46b68cff-xfjq9            105m         0Mi             
+mongodb-0                           286m         448Mi           
+
+
+======================================================
+[2026-11-19 01:51:39] SNAPSHOT - Load Gen (8 replicas) #8
+======================================================
+--- HPA STATUS ---
+NAME        REFERENCE                     TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+flask-hpa   Deployment/flask-deployment   cpu: 30%/70%   2         5         2          45m
+
+--- PODS (flask-app namespace) ---
+NAME                                READY   STATUS    RESTARTS      AGE
+flask-deployment-587884f456-d95sl   1/1     Running   0             4m35s
+flask-deployment-587884f456-qjhhm   1/1     Running   0             5m2s
+load-gen-c46b68cff-8crx7            1/1     Running   0             89s
+load-gen-c46b68cff-hzh4h            1/1     Running   0             89s
+load-gen-c46b68cff-lnnfx            1/1     Running   0             89s
+load-gen-c46b68cff-p28gm            1/1     Running   0             88s
+load-gen-c46b68cff-qkn9c            1/1     Running   0             89s
+load-gen-c46b68cff-tbbvz            1/1     Running   0             89s
+load-gen-c46b68cff-wqvqt            1/1     Running   0             89s
+load-gen-c46b68cff-xfjq9            1/1     Running   0             89s
+mongodb-0                           0/1     Running   6 (10s ago)   40m
+
+--- RESOURCE UTILIZATION (top pods) ---
+NAME                                CPU(cores)   MEMORY(bytes)   
+flask-deployment-587884f456-d95sl   65m          70Mi            
+flask-deployment-587884f456-qjhhm   56m          70Mi            
+load-gen-c46b68cff-8crx7            88m          1Mi             
+load-gen-c46b68cff-hzh4h            54m          1Mi             
+load-gen-c46b68cff-qkn9c            67m          0Mi             
+load-gen-c46b68cff-tbbvz            103m         2Mi             
+load-gen-c46b68cff-wqvqt            77m          1Mi             
+load-gen-c46b68cff-xfjq9            105m         0Mi             
+mongodb-0                           286m         448Mi           
+
+
+>>> [2026-11-19 01:51:40] ACTION: Scaling load-gen deployment to 16 replicas <<<
+
+
+======================================================
+[2026-11-19 01:51:50] SNAPSHOT - Load Gen (16 replicas) #1
+======================================================
+--- HPA STATUS ---
+NAME        REFERENCE                     TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+flask-hpa   Deployment/flask-deployment   cpu: 30%/70%   2         5         2          45m
+
+--- PODS (flask-app namespace) ---
+NAME                                READY   STATUS              RESTARTS      AGE
+flask-deployment-587884f456-d95sl   0/1     Running             0             4m46s
+flask-deployment-587884f456-qjhhm   0/1     Running             0             5m13s
+load-gen-c46b68cff-8crx7            1/1     Running             0             100s
+load-gen-c46b68cff-fcczd            0/1     ContainerCreating   0             10s
+load-gen-c46b68cff-glgk4            1/1     Running             0             10s
+load-gen-c46b68cff-hkv7r            0/1     ContainerCreating   0             10s
+load-gen-c46b68cff-hzh4h            1/1     Running             0             100s
+load-gen-c46b68cff-k6zfx            0/1     ContainerCreating   0             10s
+load-gen-c46b68cff-l9wc9            0/1     ContainerCreating   0             10s
+load-gen-c46b68cff-lnnfx            1/1     Running             0             100s
+load-gen-c46b68cff-p28gm            1/1     Running             0             99s
+load-gen-c46b68cff-qkn9c            1/1     Running             0             100s
+load-gen-c46b68cff-tbbvz            1/1     Running             0             100s
+load-gen-c46b68cff-v544d            0/1     ContainerCreating   0             10s
+load-gen-c46b68cff-wjd42            0/1     ContainerCreating   0             10s
+load-gen-c46b68cff-wqvqt            1/1     Running             0             100s
+load-gen-c46b68cff-wsh6n            0/1     ContainerCreating   0             10s
+load-gen-c46b68cff-xfjq9            1/1     Running             0             100s
+mongodb-0                           0/1     Running             6 (21s ago)   40m
+
+--- RESOURCE UTILIZATION (top pods) ---
+NAME                                CPU(cores)   MEMORY(bytes)   
+flask-deployment-587884f456-d95sl   235m         70Mi            
+flask-deployment-587884f456-qjhhm   226m         70Mi            
+load-gen-c46b68cff-8crx7            52m          0Mi             
+load-gen-c46b68cff-hzh4h            59m          0Mi             
+load-gen-c46b68cff-lnnfx            49m          0Mi             
+load-gen-c46b68cff-p28gm            59m          1Mi             
+load-gen-c46b68cff-qkn9c            58m          0Mi             
+load-gen-c46b68cff-tbbvz            52m          1Mi             
+load-gen-c46b68cff-wqvqt            56m          0Mi             
+load-gen-c46b68cff-xfjq9            51m          0Mi             
+mongodb-0                           116m         182Mi           
+
+
+======================================================
+[2026-11-19 01:52:00] SNAPSHOT - Load Gen (16 replicas) #2
+======================================================
+--- HPA STATUS ---
+NAME        REFERENCE                     TARGETS         MINPODS   MAXPODS   REPLICAS   AGE
+flask-hpa   Deployment/flask-deployment   cpu: 113%/70%   2         5         2          46m
+
+--- PODS (flask-app namespace) ---
+NAME                                READY   STATUS              RESTARTS      AGE
+flask-deployment-587884f456-d95sl   1/1     Running             0             4m57s
+flask-deployment-587884f456-qjhhm   1/1     Running             0             5m24s
+load-gen-c46b68cff-8crx7            1/1     Running             0             111s
+load-gen-c46b68cff-fcczd            1/1     Running             0             21s
+load-gen-c46b68cff-glgk4            1/1     Running             0             21s
+load-gen-c46b68cff-hkv7r            1/1     Running             0             21s
+load-gen-c46b68cff-hzh4h            1/1     Running             0             111s
+load-gen-c46b68cff-k6zfx            1/1     Running             0             21s
+load-gen-c46b68cff-l9wc9            0/1     ContainerCreating   0             21s
+load-gen-c46b68cff-lnnfx            1/1     Running             0             111s
+load-gen-c46b68cff-p28gm            1/1     Running             0             110s
+load-gen-c46b68cff-qkn9c            1/1     Running             0             111s
+load-gen-c46b68cff-tbbvz            1/1     Running             0             111s
+load-gen-c46b68cff-v544d            0/1     ContainerCreating   0             21s
+load-gen-c46b68cff-wjd42            0/1     ContainerCreating   0             21s
+load-gen-c46b68cff-wqvqt            1/1     Running             0             111s
+load-gen-c46b68cff-wsh6n            1/1     Running             0             21s
+load-gen-c46b68cff-xfjq9            1/1     Running             0             111s
+mongodb-0                           1/1     Running             6 (32s ago)   40m
+
+--- RESOURCE UTILIZATION (top pods) ---
+NAME                                CPU(cores)   MEMORY(bytes)   
+flask-deployment-587884f456-d95sl   235m         70Mi            
+flask-deployment-587884f456-qjhhm   226m         70Mi            
+load-gen-c46b68cff-8crx7            52m          0Mi             
+load-gen-c46b68cff-hzh4h            59m          0Mi             
+load-gen-c46b68cff-lnnfx            49m          0Mi             
+load-gen-c46b68cff-p28gm            59m          1Mi             
+load-gen-c46b68cff-qkn9c            58m          0Mi             
+load-gen-c46b68cff-tbbvz            52m          1Mi             
+load-gen-c46b68cff-wqvqt            56m          0Mi             
+load-gen-c46b68cff-xfjq9            51m          0Mi             
+mongodb-0                           116m         182Mi           
+
+
+======================================================
+[2026-11-19 01:52:12] SNAPSHOT - Load Gen (16 replicas) #3
+======================================================
+--- HPA STATUS ---
+NAME        REFERENCE                     TARGETS         MINPODS   MAXPODS   REPLICAS   AGE
+flask-hpa   Deployment/flask-deployment   cpu: 115%/70%   2         5         2          46m
+
+--- PODS (flask-app namespace) ---
+NAME                                READY   STATUS              RESTARTS      AGE
+flask-deployment-587884f456-9j7hr   0/1     Pending             0             1s
+flask-deployment-587884f456-d95sl   1/1     Running             0             5m9s
+flask-deployment-587884f456-llhj5   0/1     ContainerCreating   0             2s
+flask-deployment-587884f456-qjhhm   1/1     Running             0             5m36s
+load-gen-c46b68cff-8crx7            1/1     Running             0             2m3s
+load-gen-c46b68cff-fcczd            1/1     Running             0             33s
+load-gen-c46b68cff-glgk4            1/1     Running             0             33s
+load-gen-c46b68cff-hkv7r            1/1     Running             0             33s
+load-gen-c46b68cff-hzh4h            1/1     Running             0             2m3s
+load-gen-c46b68cff-k6zfx            1/1     Running             0             33s
+load-gen-c46b68cff-l9wc9            0/1     ContainerCreating   0             33s
+load-gen-c46b68cff-lnnfx            1/1     Running             0             2m3s
+load-gen-c46b68cff-p28gm            1/1     Running             0             2m2s
+load-gen-c46b68cff-qkn9c            1/1     Running             0             2m3s
+load-gen-c46b68cff-tbbvz            1/1     Running             0             2m3s
+load-gen-c46b68cff-v544d            1/1     Running             0             33s
+load-gen-c46b68cff-wjd42            1/1     Running             0             33s
+load-gen-c46b68cff-wqvqt            1/1     Running             0             2m3s
+load-gen-c46b68cff-wsh6n            1/1     Running             0             33s
+load-gen-c46b68cff-xfjq9            1/1     Running             0             2m3s
+mongodb-0                           1/1     Running             6 (44s ago)   40m
+
+--- RESOURCE UTILIZATION (top pods) ---
+NAME                                CPU(cores)   MEMORY(bytes)   
+flask-deployment-587884f456-d95sl   235m         70Mi            
+flask-deployment-587884f456-qjhhm   226m         70Mi            
+load-gen-c46b68cff-8crx7            52m          0Mi             
+load-gen-c46b68cff-hzh4h            59m          0Mi             
+load-gen-c46b68cff-lnnfx            49m          0Mi             
+load-gen-c46b68cff-p28gm            59m          1Mi             
+load-gen-c46b68cff-qkn9c            58m          0Mi             
+load-gen-c46b68cff-tbbvz            52m          1Mi             
+load-gen-c46b68cff-wqvqt            56m          0Mi             
+load-gen-c46b68cff-xfjq9            51m          0Mi             
+mongodb-0                           116m         182Mi           
+
+
+======================================================
+[2026-11-19 01:52:24] SNAPSHOT - Load Gen (16 replicas) #4
+======================================================
+--- HPA STATUS ---
+NAME        REFERENCE                     TARGETS         MINPODS   MAXPODS   REPLICAS   AGE
+flask-hpa   Deployment/flask-deployment   cpu: 115%/70%   2         5         2          46m
+
+--- PODS (flask-app namespace) ---
+NAME                                READY   STATUS              RESTARTS      AGE
+flask-deployment-587884f456-9j7hr   0/1     ContainerCreating   0             13s
+flask-deployment-587884f456-d95sl   1/1     Running             0             5m21s
+flask-deployment-587884f456-llhj5   0/1     ContainerCreating   0             14s
+flask-deployment-587884f456-qjhhm   1/1     Running             0             5m48s
+load-gen-c46b68cff-8crx7            1/1     Running             0             2m15s
+load-gen-c46b68cff-fcczd            1/1     Running             0             45s
+load-gen-c46b68cff-glgk4            1/1     Running             0             45s
+load-gen-c46b68cff-hkv7r            1/1     Running             0             45s
+load-gen-c46b68cff-hzh4h            1/1     Running             0             2m15s
+load-gen-c46b68cff-k6zfx            1/1     Running             0             45s
+load-gen-c46b68cff-l9wc9            1/1     Running             0             45s
+load-gen-c46b68cff-lnnfx            1/1     Running             0             2m15s
+load-gen-c46b68cff-p28gm            1/1     Running             0             2m14s
+load-gen-c46b68cff-qkn9c            1/1     Running             0             2m15s
+load-gen-c46b68cff-tbbvz            1/1     Running             0             2m15s
+load-gen-c46b68cff-v544d            1/1     Running             0             45s
+load-gen-c46b68cff-wjd42            1/1     Running             0             45s
+load-gen-c46b68cff-wqvqt            1/1     Running             0             2m15s
+load-gen-c46b68cff-wsh6n            1/1     Running             0             45s
+load-gen-c46b68cff-xfjq9            1/1     Running             0             2m15s
+mongodb-0                           1/1     Running             6 (56s ago)   40m
+
+--- RESOURCE UTILIZATION (top pods) ---
+NAME                                CPU(cores)   MEMORY(bytes)   
+flask-deployment-587884f456-d95sl   235m         70Mi            
+flask-deployment-587884f456-qjhhm   226m         70Mi            
+load-gen-c46b68cff-8crx7            52m          0Mi             
+load-gen-c46b68cff-hzh4h            59m          0Mi             
+load-gen-c46b68cff-lnnfx            49m          0Mi             
+load-gen-c46b68cff-p28gm            59m          1Mi             
+load-gen-c46b68cff-qkn9c            58m          0Mi             
+load-gen-c46b68cff-tbbvz            52m          1Mi             
+load-gen-c46b68cff-wqvqt            56m          0Mi             
+load-gen-c46b68cff-xfjq9            51m          0Mi             
+mongodb-0                           116m         182Mi           
+
+
+======================================================
+[2026-11-19 01:52:36] SNAPSHOT - Load Gen (16 replicas) #5
+======================================================
+--- HPA STATUS ---
+NAME        REFERENCE                     TARGETS         MINPODS   MAXPODS   REPLICAS   AGE
+flask-hpa   Deployment/flask-deployment   cpu: 115%/70%   2         5         4          46m
+
+--- PODS (flask-app namespace) ---
+NAME                                READY   STATUS    RESTARTS      AGE
+flask-deployment-587884f456-9j7hr   0/1     Running   0             25s
+flask-deployment-587884f456-d95sl   1/1     Running   0             5m33s
+flask-deployment-587884f456-llhj5   0/1     Running   0             26s
+flask-deployment-587884f456-qjhhm   1/1     Running   0             6m
+load-gen-c46b68cff-8crx7            1/1     Running   0             2m27s
+load-gen-c46b68cff-fcczd            1/1     Running   0             57s
+load-gen-c46b68cff-glgk4            1/1     Running   0             57s
+load-gen-c46b68cff-hkv7r            1/1     Running   0             57s
+load-gen-c46b68cff-hzh4h            1/1     Running   0             2m27s
+load-gen-c46b68cff-k6zfx            1/1     Running   0             57s
+load-gen-c46b68cff-l9wc9            1/1     Running   0             57s
+load-gen-c46b68cff-lnnfx            1/1     Running   0             2m27s
+load-gen-c46b68cff-p28gm            1/1     Running   0             2m26s
+load-gen-c46b68cff-qkn9c            1/1     Running   0             2m27s
+load-gen-c46b68cff-tbbvz            1/1     Running   0             2m27s
+load-gen-c46b68cff-v544d            1/1     Running   0             57s
+load-gen-c46b68cff-wjd42            1/1     Running   0             57s
+load-gen-c46b68cff-wqvqt            1/1     Running   0             2m27s
+load-gen-c46b68cff-wsh6n            1/1     Running   0             57s
+load-gen-c46b68cff-xfjq9            1/1     Running   0             2m27s
+mongodb-0                           1/1     Running   6 (68s ago)   41m
+
+--- RESOURCE UTILIZATION (top pods) ---
+NAME                                CPU(cores)   MEMORY(bytes)   
+flask-deployment-587884f456-d95sl   235m         70Mi            
+flask-deployment-587884f456-qjhhm   226m         70Mi            
+load-gen-c46b68cff-8crx7            52m          0Mi             
+load-gen-c46b68cff-hzh4h            59m          0Mi             
+load-gen-c46b68cff-lnnfx            49m          0Mi             
+load-gen-c46b68cff-p28gm            59m          1Mi             
+load-gen-c46b68cff-qkn9c            58m          0Mi             
+load-gen-c46b68cff-tbbvz            52m          1Mi             
+load-gen-c46b68cff-wqvqt            56m          0Mi             
+load-gen-c46b68cff-xfjq9            51m          0Mi             
+mongodb-0                           116m         182Mi           
+
+
+======================================================
+[2026-11-19 01:52:48] SNAPSHOT - Load Gen (16 replicas) #6
+======================================================
+--- HPA STATUS ---
+NAME        REFERENCE                     TARGETS         MINPODS   MAXPODS   REPLICAS   AGE
+flask-hpa   Deployment/flask-deployment   cpu: 115%/70%   2         5         4          46m
+
+--- PODS (flask-app namespace) ---
+NAME                                READY   STATUS    RESTARTS      AGE
+flask-deployment-587884f456-9j7hr   0/1     Running   0             37s
+flask-deployment-587884f456-d95sl   1/1     Running   0             5m45s
+flask-deployment-587884f456-llhj5   0/1     Running   0             38s
+flask-deployment-587884f456-qjhhm   1/1     Running   0             6m12s
+load-gen-c46b68cff-8crx7            1/1     Running   0             2m39s
+load-gen-c46b68cff-fcczd            1/1     Running   0             69s
+load-gen-c46b68cff-glgk4            1/1     Running   0             69s
+load-gen-c46b68cff-hkv7r            1/1     Running   0             69s
+load-gen-c46b68cff-hzh4h            1/1     Running   0             2m39s
+load-gen-c46b68cff-k6zfx            1/1     Running   0             69s
+load-gen-c46b68cff-l9wc9            1/1     Running   0             69s
+load-gen-c46b68cff-lnnfx            1/1     Running   0             2m39s
+load-gen-c46b68cff-p28gm            1/1     Running   0             2m38s
+load-gen-c46b68cff-qkn9c            1/1     Running   0             2m39s
+load-gen-c46b68cff-tbbvz            1/1     Running   0             2m39s
+load-gen-c46b68cff-v544d            1/1     Running   0             69s
+load-gen-c46b68cff-wjd42            1/1     Running   0             69s
+load-gen-c46b68cff-wqvqt            1/1     Running   0             2m39s
+load-gen-c46b68cff-wsh6n            1/1     Running   0             69s
+load-gen-c46b68cff-xfjq9            1/1     Running   0             2m39s
+mongodb-0                           1/1     Running   6 (80s ago)   41m
+
+--- RESOURCE UTILIZATION (top pods) ---
+NAME                                CPU(cores)   MEMORY(bytes)   
+flask-deployment-587884f456-9j7hr   135m         17Mi            
+flask-deployment-587884f456-d95sl   112m         70Mi            
+flask-deployment-587884f456-llhj5   149m         17Mi            
+flask-deployment-587884f456-qjhhm   116m         70Mi            
+load-gen-c46b68cff-8crx7            18m          0Mi             
+load-gen-c46b68cff-fcczd            30m          0Mi             
+load-gen-c46b68cff-glgk4            25m          0Mi             
+load-gen-c46b68cff-hkv7r            28m          0Mi             
+load-gen-c46b68cff-hzh4h            21m          0Mi             
+load-gen-c46b68cff-k6zfx            27m          0Mi             
+load-gen-c46b68cff-l9wc9            24m          1Mi             
+load-gen-c46b68cff-lnnfx            21m          0Mi             
+load-gen-c46b68cff-p28gm            20m          0Mi             
+load-gen-c46b68cff-qkn9c            19m          0Mi             
+load-gen-c46b68cff-tbbvz            20m          0Mi             
+load-gen-c46b68cff-v544d            22m          0Mi             
+load-gen-c46b68cff-wjd42            28m          0Mi             
+load-gen-c46b68cff-wqvqt            18m          0Mi             
+load-gen-c46b68cff-wsh6n            27m          1Mi             
+load-gen-c46b68cff-xfjq9            23m          1Mi             
+mongodb-0                           312m         441Mi           
+
+
+======================================================
+[2026-11-19 01:53:00] SNAPSHOT - Load Gen (16 replicas) #7
+======================================================
+--- HPA STATUS ---
+NAME        REFERENCE                     TARGETS         MINPODS   MAXPODS   REPLICAS   AGE
+flask-hpa   Deployment/flask-deployment   cpu: 115%/70%   2         5         4          47m
+
+--- PODS (flask-app namespace) ---
+NAME                                READY   STATUS    RESTARTS      AGE
+flask-deployment-587884f456-9j7hr   0/1     Running   0             51s
+flask-deployment-587884f456-d95sl   1/1     Running   0             5m59s
+flask-deployment-587884f456-llhj5   0/1     Running   0             52s
+flask-deployment-587884f456-qjhhm   1/1     Running   0             6m26s
+load-gen-c46b68cff-8crx7            1/1     Running   0             2m53s
+load-gen-c46b68cff-fcczd            1/1     Running   0             83s
+load-gen-c46b68cff-glgk4            1/1     Running   0             83s
+load-gen-c46b68cff-hkv7r            1/1     Running   0             83s
+load-gen-c46b68cff-hzh4h            1/1     Running   0             2m53s
+load-gen-c46b68cff-k6zfx            1/1     Running   0             83s
+load-gen-c46b68cff-l9wc9            1/1     Running   0             83s
+load-gen-c46b68cff-lnnfx            1/1     Running   0             2m53s
+load-gen-c46b68cff-p28gm            1/1     Running   0             2m52s
+load-gen-c46b68cff-qkn9c            1/1     Running   0             2m53s
+load-gen-c46b68cff-tbbvz            1/1     Running   0             2m53s
+load-gen-c46b68cff-v544d            1/1     Running   0             83s
+load-gen-c46b68cff-wjd42            1/1     Running   0             83s
+load-gen-c46b68cff-wqvqt            1/1     Running   0             2m53s
+load-gen-c46b68cff-wsh6n            1/1     Running   0             83s
+load-gen-c46b68cff-xfjq9            1/1     Running   0             2m53s
+mongodb-0                           1/1     Running   6 (94s ago)   41m
+
+--- RESOURCE UTILIZATION (top pods) ---
+NAME                                CPU(cores)   MEMORY(bytes)   
+flask-deployment-587884f456-9j7hr   135m         17Mi            
+flask-deployment-587884f456-d95sl   112m         70Mi            
+flask-deployment-587884f456-llhj5   149m         17Mi            
+flask-deployment-587884f456-qjhhm   116m         70Mi            
+load-gen-c46b68cff-8crx7            18m          0Mi             
+load-gen-c46b68cff-fcczd            30m          0Mi             
+load-gen-c46b68cff-glgk4            25m          0Mi             
+load-gen-c46b68cff-hkv7r            28m          0Mi             
+load-gen-c46b68cff-hzh4h            21m          0Mi             
+load-gen-c46b68cff-k6zfx            27m          0Mi             
+load-gen-c46b68cff-l9wc9            24m          1Mi             
+load-gen-c46b68cff-lnnfx            21m          0Mi             
+load-gen-c46b68cff-p28gm            20m          0Mi             
+load-gen-c46b68cff-qkn9c            19m          0Mi             
+load-gen-c46b68cff-tbbvz            20m          0Mi             
+load-gen-c46b68cff-v544d            22m          0Mi             
+load-gen-c46b68cff-wjd42            28m          0Mi             
+load-gen-c46b68cff-wqvqt            18m          0Mi             
+load-gen-c46b68cff-wsh6n            27m          1Mi             
+load-gen-c46b68cff-xfjq9            23m          1Mi             
+mongodb-0                           312m         441Mi           
+
+
+======================================================
+[2026-11-19 01:53:14] SNAPSHOT - Load Gen (16 replicas) #8
+======================================================
+--- HPA STATUS ---
+NAME        REFERENCE                     TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+flask-hpa   Deployment/flask-deployment   cpu: 57%/70%   2         5         4          47m
+
+--- PODS (flask-app namespace) ---
 NAME                                READY   STATUS    RESTARTS       AGE
+flask-deployment-587884f456-9j7hr   1/1     Running   0              63s
+flask-deployment-587884f456-d95sl   1/1     Running   0              6m11s
+flask-deployment-587884f456-llhj5   1/1     Running   0              64s
+flask-deployment-587884f456-qjhhm   1/1     Running   0              6m38s
+load-gen-c46b68cff-8crx7            1/1     Running   0              3m5s
+load-gen-c46b68cff-fcczd            1/1     Running   0              95s
+load-gen-c46b68cff-glgk4            1/1     Running   0              95s
+load-gen-c46b68cff-hkv7r            1/1     Running   0              95s
+load-gen-c46b68cff-hzh4h            1/1     Running   0              3m5s
+load-gen-c46b68cff-k6zfx            1/1     Running   0              95s
+load-gen-c46b68cff-l9wc9            1/1     Running   0              95s
+load-gen-c46b68cff-lnnfx            1/1     Running   0              3m5s
+load-gen-c46b68cff-p28gm            1/1     Running   0              3m4s
+load-gen-c46b68cff-qkn9c            1/1     Running   0              3m5s
+load-gen-c46b68cff-tbbvz            1/1     Running   0              3m5s
+load-gen-c46b68cff-v544d            1/1     Running   0              95s
+load-gen-c46b68cff-wjd42            1/1     Running   0              95s
+load-gen-c46b68cff-wqvqt            1/1     Running   0              3m5s
+load-gen-c46b68cff-wsh6n            1/1     Running   0              95s
+load-gen-c46b68cff-xfjq9            1/1     Running   0              3m5s
+mongodb-0                           1/1     Running   6 (106s ago)   41m
 
-flask-deployment-565b8ccdfd-4kz2c   1/1     Running   0              105s
-
-flask-deployment-565b8ccdfd-9z9bj   1/1     Running   2 (2m8s ago)   14m
-
-flask-deployment-565b8ccdfd-v2r5z   1/1     Running   0              100s
-Top Metrics:
+--- RESOURCE UTILIZATION (top pods) ---
 NAME                                CPU(cores)   MEMORY(bytes)   
-
-flask-deployment-565b8ccdfd-4kz2c   40m          69Mi            
-
-flask-deployment-565b8ccdfd-9z9bj   6m           69Mi            
-
-flask-deployment-565b8ccdfd-v2r5z   84m          68Mi
-
-
-
-[T+60s] HPA Status:
-NAME        REFERENCE                     TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
-
-flask-hpa   Deployment/flask-deployment   cpu: 3%/70%   2         5         3          13m
-Pod Status:
-NAME                                READY   STATUS        RESTARTS        AGE
-
-flask-deployment-565b8ccdfd-4kz2c   1/1     Running       0               117s
-
-flask-deployment-565b8ccdfd-9z9bj   1/1     Terminating   2 (2m20s ago)   14m
-
-flask-deployment-565b8ccdfd-v2r5z   1/1     Running       0               112s
-Top Metrics:
-NAME                                CPU(cores)   MEMORY(bytes)   
-
-flask-deployment-565b8ccdfd-4kz2c   95m          70Mi            
-
-flask-deployment-565b8ccdfd-9z9bj   87m          70Mi            
-
-flask-deployment-565b8ccdfd-v2r5z   84m          70Mi
+flask-deployment-587884f456-9j7hr   135m         17Mi            
+flask-deployment-587884f456-d95sl   112m         70Mi            
+flask-deployment-587884f456-llhj5   149m         17Mi            
+flask-deployment-587884f456-qjhhm   116m         70Mi            
+load-gen-c46b68cff-8crx7            18m          0Mi             
+load-gen-c46b68cff-fcczd            30m          0Mi             
+load-gen-c46b68cff-glgk4            25m          0Mi             
+load-gen-c46b68cff-hkv7r            28m          0Mi             
+load-gen-c46b68cff-hzh4h            21m          0Mi             
+load-gen-c46b68cff-k6zfx            27m          0Mi             
+load-gen-c46b68cff-l9wc9            24m          1Mi             
+load-gen-c46b68cff-lnnfx            21m          0Mi             
+load-gen-c46b68cff-p28gm            20m          0Mi             
+load-gen-c46b68cff-qkn9c            19m          0Mi             
+load-gen-c46b68cff-tbbvz            20m          0Mi             
+load-gen-c46b68cff-v544d            22m          0Mi             
+load-gen-c46b68cff-wjd42            28m          0Mi             
+load-gen-c46b68cff-wqvqt            18m          0Mi             
+load-gen-c46b68cff-wsh6n            27m          1Mi             
+load-gen-c46b68cff-xfjq9            23m          1Mi             
+mongodb-0                           312m         441Mi           
 
 
+>>> [2026-11-19 01:53:17] ACTION: Scaling load-gen deployment to 24 replicas <<<
 
-[T+70s] HPA Status:
+
+======================================================
+[2026-11-19 01:53:28] SNAPSHOT - Load Gen (24 replicas) #1
+======================================================
+--- HPA STATUS ---
 NAME        REFERENCE                     TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+flask-hpa   Deployment/flask-deployment   cpu: 57%/70%   2         5         4          47m
 
-flask-hpa   Deployment/flask-deployment   cpu: 44%/70%   2         5         2          13m
-Pod Status:
-NAME                                READY   STATUS    RESTARTS   AGE
+--- PODS (flask-app namespace) ---
+NAME                                READY   STATUS              RESTARTS     AGE
+flask-deployment-587884f456-9j7hr   1/1     Running             0            77s
+flask-deployment-587884f456-d95sl   1/1     Running             0            6m25s
+flask-deployment-587884f456-llhj5   1/1     Running             0            78s
+flask-deployment-587884f456-qjhhm   1/1     Running             0            6m52s
+load-gen-c46b68cff-2pvp9            0/1     ContainerCreating   0            7s
+load-gen-c46b68cff-8crx7            1/1     Running             0            3m19s
+load-gen-c46b68cff-9j22b            0/1     ContainerCreating   0            8s
+load-gen-c46b68cff-b4kh4            0/1     ContainerCreating   0            10s
+load-gen-c46b68cff-bb9wz            0/1     ContainerCreating   0            9s
+load-gen-c46b68cff-bn5wj            0/1     ContainerCreating   0            9s
+load-gen-c46b68cff-fcczd            1/1     Running             0            109s
+load-gen-c46b68cff-glgk4            1/1     Running             0            109s
+load-gen-c46b68cff-hkv7r            1/1     Running             0            109s
+load-gen-c46b68cff-hzh4h            1/1     Running             0            3m19s
+load-gen-c46b68cff-k6fpm            0/1     Pending             0            8s
+load-gen-c46b68cff-k6zfx            1/1     Running             0            109s
+load-gen-c46b68cff-l9wc9            1/1     Running             0            109s
+load-gen-c46b68cff-lnnfx            1/1     Running             0            3m19s
+load-gen-c46b68cff-p28gm            1/1     Running             0            3m18s
+load-gen-c46b68cff-p9bbq            0/1     ContainerCreating   0            8s
+load-gen-c46b68cff-qkn9c            1/1     Running             0            3m19s
+load-gen-c46b68cff-t55jl            0/1     Pending             0            8s
+load-gen-c46b68cff-tbbvz            1/1     Running             0            3m19s
+load-gen-c46b68cff-v544d            1/1     Running             0            109s
+load-gen-c46b68cff-wjd42            1/1     Running             0            109s
+load-gen-c46b68cff-wqvqt            1/1     Running             0            3m19s
+load-gen-c46b68cff-wsh6n            1/1     Running             0            109s
+load-gen-c46b68cff-xfjq9            1/1     Running             0            3m19s
+mongodb-0                           1/1     Running             6 (2m ago)   42m
 
-flask-deployment-565b8ccdfd-4kz2c   1/1     Running   0          2m8s
-
-flask-deployment-565b8ccdfd-v2r5z   1/1     Running   0          2m3s
-Top Metrics:
+--- RESOURCE UTILIZATION (top pods) ---
 NAME                                CPU(cores)   MEMORY(bytes)   
+flask-deployment-587884f456-9j7hr   135m         17Mi            
+flask-deployment-587884f456-d95sl   112m         70Mi            
+flask-deployment-587884f456-llhj5   149m         17Mi            
+flask-deployment-587884f456-qjhhm   116m         70Mi            
+load-gen-c46b68cff-8crx7            18m          0Mi             
+load-gen-c46b68cff-fcczd            30m          0Mi             
+load-gen-c46b68cff-glgk4            25m          0Mi             
+load-gen-c46b68cff-hkv7r            28m          0Mi             
+load-gen-c46b68cff-hzh4h            21m          0Mi             
+load-gen-c46b68cff-k6zfx            27m          0Mi             
+load-gen-c46b68cff-l9wc9            24m          1Mi             
+load-gen-c46b68cff-lnnfx            21m          0Mi             
+load-gen-c46b68cff-p28gm            20m          0Mi             
+load-gen-c46b68cff-qkn9c            19m          0Mi             
+load-gen-c46b68cff-tbbvz            20m          0Mi             
+load-gen-c46b68cff-v544d            22m          0Mi             
+load-gen-c46b68cff-wjd42            28m          0Mi             
+load-gen-c46b68cff-wqvqt            18m          0Mi             
+load-gen-c46b68cff-wsh6n            27m          1Mi             
+load-gen-c46b68cff-xfjq9            23m          1Mi             
+mongodb-0                           312m         441Mi           
 
-flask-deployment-565b8ccdfd-4kz2c   95m          70Mi            
 
-flask-deployment-565b8ccdfd-v2r5z   84m          70Mi
-
-
-
-[T+80s] HPA Status:
+======================================================
+[2026-11-19 01:53:40] SNAPSHOT - Load Gen (24 replicas) #2
+======================================================
+--- HPA STATUS ---
 NAME        REFERENCE                     TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+flask-hpa   Deployment/flask-deployment   cpu: 57%/70%   2         5         4          47m
 
-flask-hpa   Deployment/flask-deployment   cpu: 44%/70%   2         5         2          13m
-Pod Status:
-NAME                                READY   STATUS    RESTARTS   AGE
+--- PODS (flask-app namespace) ---
+NAME                                READY   STATUS              RESTARTS        AGE
+flask-deployment-587884f456-9j7hr   1/1     Running             0               90s
+flask-deployment-587884f456-d95sl   1/1     Running             0               6m38s
+flask-deployment-587884f456-llhj5   1/1     Running             0               91s
+flask-deployment-587884f456-qjhhm   1/1     Running             0               7m5s
+load-gen-c46b68cff-2pvp9            0/1     ContainerCreating   0               20s
+load-gen-c46b68cff-8crx7            1/1     Running             0               3m32s
+load-gen-c46b68cff-9j22b            0/1     ContainerCreating   0               21s
+load-gen-c46b68cff-b4kh4            0/1     ContainerCreating   0               23s
+load-gen-c46b68cff-bb9wz            0/1     ContainerCreating   0               22s
+load-gen-c46b68cff-bn5wj            0/1     ContainerCreating   0               22s
+load-gen-c46b68cff-fcczd            1/1     Running             0               2m2s
+load-gen-c46b68cff-glgk4            1/1     Running             0               2m2s
+load-gen-c46b68cff-hkv7r            1/1     Running             0               2m2s
+load-gen-c46b68cff-hzh4h            1/1     Running             0               3m32s
+load-gen-c46b68cff-k6fpm            0/1     ContainerCreating   0               21s
+load-gen-c46b68cff-k6zfx            1/1     Running             0               2m2s
+load-gen-c46b68cff-l9wc9            1/1     Running             0               2m2s
+load-gen-c46b68cff-lnnfx            1/1     Running             0               3m32s
+load-gen-c46b68cff-p28gm            1/1     Running             0               3m31s
+load-gen-c46b68cff-p9bbq            0/1     ContainerCreating   0               21s
+load-gen-c46b68cff-qkn9c            1/1     Running             0               3m32s
+load-gen-c46b68cff-t55jl            0/1     ContainerCreating   0               21s
+load-gen-c46b68cff-tbbvz            1/1     Running             0               3m32s
+load-gen-c46b68cff-v544d            1/1     Running             0               2m2s
+load-gen-c46b68cff-wjd42            1/1     Running             0               2m2s
+load-gen-c46b68cff-wqvqt            1/1     Running             0               3m32s
+load-gen-c46b68cff-wsh6n            1/1     Running             0               2m2s
+load-gen-c46b68cff-xfjq9            1/1     Running             0               3m32s
+mongodb-0                           1/1     Running             6 (2m13s ago)   42m
 
-flask-deployment-565b8ccdfd-4kz2c   1/1     Running   0          2m20s
-
-flask-deployment-565b8ccdfd-v2r5z   1/1     Running   0          2m15s
-Top Metrics:
+--- RESOURCE UTILIZATION (top pods) ---
 NAME                                CPU(cores)   MEMORY(bytes)   
+flask-deployment-587884f456-9j7hr   135m         17Mi            
+flask-deployment-587884f456-d95sl   112m         70Mi            
+flask-deployment-587884f456-llhj5   149m         17Mi            
+flask-deployment-587884f456-qjhhm   116m         70Mi            
+load-gen-c46b68cff-8crx7            18m          0Mi             
+load-gen-c46b68cff-fcczd            30m          0Mi             
+load-gen-c46b68cff-glgk4            25m          0Mi             
+load-gen-c46b68cff-hkv7r            28m          0Mi             
+load-gen-c46b68cff-hzh4h            21m          0Mi             
+load-gen-c46b68cff-k6zfx            27m          0Mi             
+load-gen-c46b68cff-l9wc9            24m          1Mi             
+load-gen-c46b68cff-lnnfx            21m          0Mi             
+load-gen-c46b68cff-p28gm            20m          0Mi             
+load-gen-c46b68cff-qkn9c            19m          0Mi             
+load-gen-c46b68cff-tbbvz            20m          0Mi             
+load-gen-c46b68cff-v544d            22m          0Mi             
+load-gen-c46b68cff-wjd42            28m          0Mi             
+load-gen-c46b68cff-wqvqt            18m          0Mi             
+load-gen-c46b68cff-wsh6n            27m          1Mi             
+load-gen-c46b68cff-xfjq9            23m          1Mi             
+mongodb-0                           312m         441Mi           
 
-flask-deployment-565b8ccdfd-4kz2c   95m          70Mi            
 
-flask-deployment-565b8ccdfd-v2r5z   84m          70Mi
-
-
-
-[T+90s] HPA Status:
+======================================================
+[2026-11-19 01:53:52] SNAPSHOT - Load Gen (24 replicas) #3
+======================================================
+--- HPA STATUS ---
 NAME        REFERENCE                     TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+flask-hpa   Deployment/flask-deployment   cpu: 57%/70%   2         5         4          47m
 
-flask-hpa   Deployment/flask-deployment   cpu: 44%/70%   2         5         2          13m
-Pod Status:
-NAME                                READY   STATUS    RESTARTS   AGE
+--- PODS (flask-app namespace) ---
+NAME                                READY   STATUS              RESTARTS        AGE
+flask-deployment-587884f456-9j7hr   1/1     Running             0               101s
+flask-deployment-587884f456-d95sl   1/1     Running             0               6m49s
+flask-deployment-587884f456-llhj5   1/1     Running             0               102s
+flask-deployment-587884f456-qjhhm   1/1     Running             0               7m16s
+load-gen-c46b68cff-2pvp9            0/1     ContainerCreating   0               31s
+load-gen-c46b68cff-8crx7            1/1     Running             0               3m43s
+load-gen-c46b68cff-9j22b            0/1     ContainerCreating   0               32s
+load-gen-c46b68cff-b4kh4            0/1     ContainerCreating   0               34s
+load-gen-c46b68cff-bb9wz            0/1     ContainerCreating   0               33s
+load-gen-c46b68cff-bn5wj            0/1     ContainerCreating   0               33s
+load-gen-c46b68cff-fcczd            1/1     Running             0               2m13s
+load-gen-c46b68cff-glgk4            1/1     Running             0               2m13s
+load-gen-c46b68cff-hkv7r            1/1     Running             0               2m13s
+load-gen-c46b68cff-hzh4h            1/1     Running             0               3m43s
+load-gen-c46b68cff-k6fpm            0/1     ContainerCreating   0               32s
+load-gen-c46b68cff-k6zfx            1/1     Running             0               2m13s
+load-gen-c46b68cff-l9wc9            1/1     Running             0               2m13s
+load-gen-c46b68cff-lnnfx            1/1     Running             0               3m43s
+load-gen-c46b68cff-p28gm            1/1     Running             0               3m42s
+load-gen-c46b68cff-p9bbq            0/1     ContainerCreating   0               32s
+load-gen-c46b68cff-qkn9c            1/1     Running             0               3m43s
+load-gen-c46b68cff-t55jl            0/1     ContainerCreating   0               32s
+load-gen-c46b68cff-tbbvz            1/1     Running             0               3m43s
+load-gen-c46b68cff-v544d            1/1     Running             0               2m13s
+load-gen-c46b68cff-wjd42            1/1     Running             0               2m13s
+load-gen-c46b68cff-wqvqt            1/1     Running             0               3m43s
+load-gen-c46b68cff-wsh6n            1/1     Running             0               2m13s
+load-gen-c46b68cff-xfjq9            1/1     Running             0               3m43s
+mongodb-0                           1/1     Running             6 (2m24s ago)   42m
 
-flask-deployment-565b8ccdfd-4kz2c   1/1     Running   0          2m31s
-
-flask-deployment-565b8ccdfd-v2r5z   1/1     Running   0          2m26s
-Top Metrics:
+--- RESOURCE UTILIZATION (top pods) ---
 NAME                                CPU(cores)   MEMORY(bytes)   
+flask-deployment-587884f456-9j7hr   124m         69Mi            
+flask-deployment-587884f456-d95sl   91m          70Mi            
+flask-deployment-587884f456-llhj5   127m         69Mi            
+flask-deployment-587884f456-qjhhm   82m          69Mi            
+load-gen-c46b68cff-8crx7            23m          0Mi             
+load-gen-c46b68cff-fcczd            23m          1Mi             
+load-gen-c46b68cff-glgk4            23m          0Mi             
+load-gen-c46b68cff-hkv7r            20m          0Mi             
+load-gen-c46b68cff-hzh4h            24m          0Mi             
+load-gen-c46b68cff-k6zfx            21m          0Mi             
+load-gen-c46b68cff-l9wc9            25m          0Mi             
+load-gen-c46b68cff-lnnfx            23m          0Mi             
+load-gen-c46b68cff-p28gm            23m          1Mi             
+load-gen-c46b68cff-qkn9c            21m          0Mi             
+load-gen-c46b68cff-tbbvz            22m          0Mi             
+load-gen-c46b68cff-v544d            22m          0Mi             
+load-gen-c46b68cff-wjd42            24m          1Mi             
+load-gen-c46b68cff-wqvqt            24m          0Mi             
+load-gen-c46b68cff-wsh6n            24m          1Mi             
+load-gen-c46b68cff-xfjq9            19m          1Mi             
+mongodb-0                           337m         436Mi           
 
-flask-deployment-565b8ccdfd-4kz2c   95m          70Mi            
 
-flask-deployment-565b8ccdfd-v2r5z   84m          70Mi
-
-
---- [STAGE 4] STOPPING LOAD GENERATOR & COOL-DOWN MONITORING ---
-
-Load generator terminated. Entering stabilization cool-down window (scaleDown.stabilizationWindowSeconds: 60s)...
-
-
-[CoolDown T+10s] HPA Status:
+======================================================
+[2026-11-19 01:54:04] SNAPSHOT - Load Gen (24 replicas) #4
+======================================================
+--- HPA STATUS ---
 NAME        REFERENCE                     TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+flask-hpa   Deployment/flask-deployment   cpu: 43%/70%   2         5         4          48m
 
-flask-hpa   Deployment/flask-deployment   cpu: 44%/70%   2         5         2          13m
-Pod Status:
-NAME                                READY   STATUS    RESTARTS   AGE
+--- PODS (flask-app namespace) ---
+NAME                                READY   STATUS              RESTARTS        AGE
+flask-deployment-587884f456-9j7hr   1/1     Terminating         0               113s
+flask-deployment-587884f456-d95sl   1/1     Running             0               7m1s
+flask-deployment-587884f456-llhj5   1/1     Terminating         0               114s
+flask-deployment-587884f456-qjhhm   1/1     Running             0               7m28s
+load-gen-c46b68cff-2pvp9            0/1     ContainerCreating   0               43s
+load-gen-c46b68cff-8crx7            1/1     Running             0               3m55s
+load-gen-c46b68cff-9j22b            1/1     Running             0               44s
+load-gen-c46b68cff-b4kh4            0/1     ContainerCreating   0               46s
+load-gen-c46b68cff-bb9wz            0/1     ContainerCreating   0               45s
+load-gen-c46b68cff-bn5wj            0/1     ContainerCreating   0               45s
+load-gen-c46b68cff-fcczd            1/1     Running             0               2m25s
+load-gen-c46b68cff-glgk4            1/1     Running             0               2m25s
+load-gen-c46b68cff-hkv7r            1/1     Running             0               2m25s
+load-gen-c46b68cff-hzh4h            1/1     Running             0               3m55s
+load-gen-c46b68cff-k6fpm            0/1     ContainerCreating   0               44s
+load-gen-c46b68cff-k6zfx            1/1     Running             0               2m25s
+load-gen-c46b68cff-l9wc9            1/1     Running             0               2m25s
+load-gen-c46b68cff-lnnfx            1/1     Running             0               3m55s
+load-gen-c46b68cff-p28gm            1/1     Running             0               3m54s
+load-gen-c46b68cff-p9bbq            1/1     Running             0               44s
+load-gen-c46b68cff-qkn9c            1/1     Running             0               3m55s
+load-gen-c46b68cff-t55jl            0/1     ContainerCreating   0               44s
+load-gen-c46b68cff-tbbvz            1/1     Running             0               3m55s
+load-gen-c46b68cff-v544d            1/1     Running             0               2m25s
+load-gen-c46b68cff-wjd42            1/1     Running             0               2m25s
+load-gen-c46b68cff-wqvqt            1/1     Running             0               3m55s
+load-gen-c46b68cff-wsh6n            1/1     Running             0               2m25s
+load-gen-c46b68cff-xfjq9            1/1     Running             0               3m55s
+mongodb-0                           1/1     Running             6 (2m36s ago)   42m
 
-flask-deployment-565b8ccdfd-4kz2c   0/1     Running   0          2m42s
-
-flask-deployment-565b8ccdfd-v2r5z   0/1     Running   0          2m37s
-Top Metrics:
+--- RESOURCE UTILIZATION (top pods) ---
 NAME                                CPU(cores)   MEMORY(bytes)   
+flask-deployment-587884f456-9j7hr   124m         69Mi            
+flask-deployment-587884f456-d95sl   91m          70Mi            
+flask-deployment-587884f456-llhj5   127m         69Mi            
+flask-deployment-587884f456-qjhhm   82m          69Mi            
+load-gen-c46b68cff-8crx7            23m          0Mi             
+load-gen-c46b68cff-fcczd            23m          1Mi             
+load-gen-c46b68cff-glgk4            23m          0Mi             
+load-gen-c46b68cff-hkv7r            20m          0Mi             
+load-gen-c46b68cff-hzh4h            24m          0Mi             
+load-gen-c46b68cff-k6zfx            21m          0Mi             
+load-gen-c46b68cff-l9wc9            25m          0Mi             
+load-gen-c46b68cff-lnnfx            23m          0Mi             
+load-gen-c46b68cff-p28gm            23m          1Mi             
+load-gen-c46b68cff-qkn9c            21m          0Mi             
+load-gen-c46b68cff-tbbvz            22m          0Mi             
+load-gen-c46b68cff-v544d            22m          0Mi             
+load-gen-c46b68cff-wjd42            24m          1Mi             
+load-gen-c46b68cff-wqvqt            24m          0Mi             
+load-gen-c46b68cff-wsh6n            24m          1Mi             
+load-gen-c46b68cff-xfjq9            19m          1Mi             
+mongodb-0                           337m         436Mi           
 
-flask-deployment-565b8ccdfd-4kz2c   95m          70Mi            
 
-flask-deployment-565b8ccdfd-v2r5z   84m          70Mi
+======================================================
+[2026-11-19 01:54:16] SNAPSHOT - Load Gen (24 replicas) #5
+======================================================
+--- HPA STATUS ---
+NAME        REFERENCE                     TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+flask-hpa   Deployment/flask-deployment   cpu: 43%/70%   2         5         2          48m
+
+--- PODS (flask-app namespace) ---
+NAME                                READY   STATUS              RESTARTS        AGE
+flask-deployment-587884f456-d95sl   1/1     Running             0               7m13s
+flask-deployment-587884f456-qjhhm   1/1     Running             0               7m40s
+load-gen-c46b68cff-2pvp9            0/1     ContainerCreating   0               55s
+load-gen-c46b68cff-8crx7            1/1     Running             0               4m7s
+load-gen-c46b68cff-9j22b            1/1     Running             0               56s
+load-gen-c46b68cff-b4kh4            0/1     ContainerCreating   0               58s
+load-gen-c46b68cff-bb9wz            1/1     Running             0               57s
+load-gen-c46b68cff-bn5wj            0/1     ContainerCreating   0               57s
+load-gen-c46b68cff-fcczd            1/1     Running             0               2m37s
+load-gen-c46b68cff-glgk4            1/1     Running             0               2m37s
+load-gen-c46b68cff-hkv7r            1/1     Running             0               2m37s
+load-gen-c46b68cff-hzh4h            1/1     Running             0               4m7s
+load-gen-c46b68cff-k6fpm            0/1     ContainerCreating   0               56s
+load-gen-c46b68cff-k6zfx            1/1     Running             0               2m37s
+load-gen-c46b68cff-l9wc9            1/1     Running             0               2m37s
+load-gen-c46b68cff-lnnfx            1/1     Running             0               4m7s
+load-gen-c46b68cff-p28gm            1/1     Running             0               4m6s
+load-gen-c46b68cff-p9bbq            1/1     Running             0               56s
+load-gen-c46b68cff-qkn9c            1/1     Running             0               4m7s
+load-gen-c46b68cff-t55jl            1/1     Running             0               56s
+load-gen-c46b68cff-tbbvz            1/1     Running             0               4m7s
+load-gen-c46b68cff-v544d            1/1     Running             0               2m37s
+load-gen-c46b68cff-wjd42            1/1     Running             0               2m37s
+load-gen-c46b68cff-wqvqt            1/1     Running             0               4m7s
+load-gen-c46b68cff-wsh6n            1/1     Running             0               2m37s
+load-gen-c46b68cff-xfjq9            1/1     Running             0               4m7s
+mongodb-0                           1/1     Running             6 (2m48s ago)   42m
+
+--- RESOURCE UTILIZATION (top pods) ---
+NAME                                CPU(cores)   MEMORY(bytes)   
+flask-deployment-587884f456-d95sl   91m          70Mi            
+flask-deployment-587884f456-qjhhm   82m          69Mi            
+load-gen-c46b68cff-8crx7            23m          0Mi             
+load-gen-c46b68cff-fcczd            23m          1Mi             
+load-gen-c46b68cff-glgk4            23m          0Mi             
+load-gen-c46b68cff-hkv7r            20m          0Mi             
+load-gen-c46b68cff-hzh4h            24m          0Mi             
+load-gen-c46b68cff-k6zfx            21m          0Mi             
+load-gen-c46b68cff-l9wc9            25m          0Mi             
+load-gen-c46b68cff-lnnfx            23m          0Mi             
+load-gen-c46b68cff-p28gm            23m          1Mi             
+load-gen-c46b68cff-qkn9c            21m          0Mi             
+load-gen-c46b68cff-tbbvz            22m          0Mi             
+load-gen-c46b68cff-v544d            22m          0Mi             
+load-gen-c46b68cff-wjd42            24m          1Mi             
+load-gen-c46b68cff-wqvqt            24m          0Mi             
+load-gen-c46b68cff-wsh6n            24m          1Mi             
+load-gen-c46b68cff-xfjq9            19m          1Mi             
+mongodb-0                           337m         436Mi           
 
 
+======================================================
+[2026-11-19 01:54:28] SNAPSHOT - Load Gen (24 replicas) #6
+======================================================
+--- HPA STATUS ---
+NAME        REFERENCE                     TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+flask-hpa   Deployment/flask-deployment   cpu: 43%/70%   2         5         2          48m
 
-[CoolDown T+20s] HPA Status:
-NAME        REFERENCE                     TARGETS              MINPODS   MAXPODS   REPLICAS   AGE
+--- PODS (flask-app namespace) ---
+NAME                                READY   STATUS              RESTARTS     AGE
+flask-deployment-587884f456-d95sl   1/1     Running             0            7m25s
+flask-deployment-587884f456-qjhhm   1/1     Running             0            7m52s
+load-gen-c46b68cff-2pvp9            1/1     Running             0            67s
+load-gen-c46b68cff-8crx7            1/1     Running             0            4m19s
+load-gen-c46b68cff-9j22b            1/1     Running             0            68s
+load-gen-c46b68cff-b4kh4            1/1     Running             0            70s
+load-gen-c46b68cff-bb9wz            1/1     Running             0            69s
+load-gen-c46b68cff-bn5wj            0/1     ContainerCreating   0            69s
+load-gen-c46b68cff-fcczd            1/1     Running             0            2m49s
+load-gen-c46b68cff-glgk4            1/1     Running             0            2m49s
+load-gen-c46b68cff-hkv7r            1/1     Running             0            2m49s
+load-gen-c46b68cff-hzh4h            1/1     Running             0            4m19s
+load-gen-c46b68cff-k6fpm            0/1     ContainerCreating   0            68s
+load-gen-c46b68cff-k6zfx            1/1     Running             0            2m49s
+load-gen-c46b68cff-l9wc9            1/1     Running             0            2m49s
+load-gen-c46b68cff-lnnfx            1/1     Running             0            4m19s
+load-gen-c46b68cff-p28gm            1/1     Running             0            4m18s
+load-gen-c46b68cff-p9bbq            1/1     Running             0            68s
+load-gen-c46b68cff-qkn9c            1/1     Running             0            4m19s
+load-gen-c46b68cff-t55jl            1/1     Running             0            68s
+load-gen-c46b68cff-tbbvz            1/1     Running             0            4m19s
+load-gen-c46b68cff-v544d            1/1     Running             0            2m49s
+load-gen-c46b68cff-wjd42            1/1     Running             0            2m49s
+load-gen-c46b68cff-wqvqt            1/1     Running             0            4m19s
+load-gen-c46b68cff-wsh6n            1/1     Running             0            2m49s
+load-gen-c46b68cff-xfjq9            1/1     Running             0            4m19s
+mongodb-0                           1/1     Running             6 (3m ago)   43m
 
-flask-hpa   Deployment/flask-deployment   cpu: <unknown>/70%   2         5         2          14m
-Pod Status:
+--- RESOURCE UTILIZATION (top pods) ---
+NAME                                CPU(cores)   MEMORY(bytes)   
+flask-deployment-587884f456-d95sl   91m          70Mi            
+flask-deployment-587884f456-qjhhm   82m          69Mi            
+load-gen-c46b68cff-8crx7            23m          0Mi             
+load-gen-c46b68cff-fcczd            23m          1Mi             
+load-gen-c46b68cff-glgk4            23m          0Mi             
+load-gen-c46b68cff-hkv7r            20m          0Mi             
+load-gen-c46b68cff-hzh4h            24m          0Mi             
+load-gen-c46b68cff-k6zfx            21m          0Mi             
+load-gen-c46b68cff-l9wc9            25m          0Mi             
+load-gen-c46b68cff-lnnfx            23m          0Mi             
+load-gen-c46b68cff-p28gm            23m          1Mi             
+load-gen-c46b68cff-qkn9c            21m          0Mi             
+load-gen-c46b68cff-tbbvz            22m          0Mi             
+load-gen-c46b68cff-v544d            22m          0Mi             
+load-gen-c46b68cff-wjd42            24m          1Mi             
+load-gen-c46b68cff-wqvqt            24m          0Mi             
+load-gen-c46b68cff-wsh6n            24m          1Mi             
+load-gen-c46b68cff-xfjq9            19m          1Mi             
+mongodb-0                           337m         436Mi           
+
+
+======================================================
+[2026-11-19 01:54:39] SNAPSHOT - Load Gen (24 replicas) #7
+======================================================
+--- HPA STATUS ---
+NAME        REFERENCE                     TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+flask-hpa   Deployment/flask-deployment   cpu: 43%/70%   2         5         2          48m
+
+--- PODS (flask-app namespace) ---
+NAME                                READY   STATUS    RESTARTS        AGE
+flask-deployment-587884f456-d95sl   1/1     Running   0               7m36s
+flask-deployment-587884f456-qjhhm   1/1     Running   0               8m3s
+load-gen-c46b68cff-2pvp9            1/1     Running   0               78s
+load-gen-c46b68cff-8crx7            1/1     Running   0               4m30s
+load-gen-c46b68cff-9j22b            1/1     Running   0               79s
+load-gen-c46b68cff-b4kh4            1/1     Running   0               81s
+load-gen-c46b68cff-bb9wz            1/1     Running   0               80s
+load-gen-c46b68cff-bn5wj            1/1     Running   0               80s
+load-gen-c46b68cff-fcczd            1/1     Running   0               3m
+load-gen-c46b68cff-glgk4            1/1     Running   0               3m
+load-gen-c46b68cff-hkv7r            1/1     Running   0               3m
+load-gen-c46b68cff-hzh4h            1/1     Running   0               4m30s
+load-gen-c46b68cff-k6fpm            1/1     Running   0               79s
+load-gen-c46b68cff-k6zfx            1/1     Running   0               3m
+load-gen-c46b68cff-l9wc9            1/1     Running   0               3m
+load-gen-c46b68cff-lnnfx            1/1     Running   0               4m30s
+load-gen-c46b68cff-p28gm            1/1     Running   0               4m29s
+load-gen-c46b68cff-p9bbq            1/1     Running   0               79s
+load-gen-c46b68cff-qkn9c            1/1     Running   0               4m30s
+load-gen-c46b68cff-t55jl            1/1     Running   0               79s
+load-gen-c46b68cff-tbbvz            1/1     Running   0               4m30s
+load-gen-c46b68cff-v544d            1/1     Running   0               3m
+load-gen-c46b68cff-wjd42            1/1     Running   0               3m
+load-gen-c46b68cff-wqvqt            1/1     Running   0               4m30s
+load-gen-c46b68cff-wsh6n            1/1     Running   0               3m
+load-gen-c46b68cff-xfjq9            1/1     Running   0               4m30s
+mongodb-0                           1/1     Running   6 (3m11s ago)   43m
+
+--- RESOURCE UTILIZATION (top pods) ---
+NAME                                CPU(cores)   MEMORY(bytes)   
+flask-deployment-587884f456-d95sl   91m          70Mi            
+flask-deployment-587884f456-qjhhm   82m          69Mi            
+load-gen-c46b68cff-8crx7            23m          0Mi             
+load-gen-c46b68cff-fcczd            23m          1Mi             
+load-gen-c46b68cff-glgk4            23m          0Mi             
+load-gen-c46b68cff-hkv7r            20m          0Mi             
+load-gen-c46b68cff-hzh4h            24m          0Mi             
+load-gen-c46b68cff-k6zfx            21m          0Mi             
+load-gen-c46b68cff-l9wc9            25m          0Mi             
+load-gen-c46b68cff-lnnfx            23m          0Mi             
+load-gen-c46b68cff-p28gm            23m          1Mi             
+load-gen-c46b68cff-qkn9c            21m          0Mi             
+load-gen-c46b68cff-tbbvz            22m          0Mi             
+load-gen-c46b68cff-v544d            22m          0Mi             
+load-gen-c46b68cff-wjd42            24m          1Mi             
+load-gen-c46b68cff-wqvqt            24m          0Mi             
+load-gen-c46b68cff-wsh6n            24m          1Mi             
+load-gen-c46b68cff-xfjq9            19m          1Mi             
+mongodb-0                           337m         436Mi           
+
+
+======================================================
+[2026-11-19 01:54:51] SNAPSHOT - Load Gen (24 replicas) #8
+======================================================
+--- HPA STATUS ---
+NAME        REFERENCE                     TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+flask-hpa   Deployment/flask-deployment   cpu: 43%/70%   2         5         2          48m
+
+--- PODS (flask-app namespace) ---
 NAME                                READY   STATUS    RESTARTS     AGE
+flask-deployment-587884f456-d95sl   1/1     Running   0            7m47s
+flask-deployment-587884f456-qjhhm   1/1     Running   0            8m14s
+load-gen-c46b68cff-2pvp9            1/1     Running   0            89s
+load-gen-c46b68cff-8crx7            1/1     Running   0            4m41s
+load-gen-c46b68cff-9j22b            1/1     Running   0            90s
+load-gen-c46b68cff-b4kh4            1/1     Running   0            92s
+load-gen-c46b68cff-bb9wz            1/1     Running   0            91s
+load-gen-c46b68cff-bn5wj            1/1     Running   0            91s
+load-gen-c46b68cff-fcczd            1/1     Running   0            3m11s
+load-gen-c46b68cff-glgk4            1/1     Running   0            3m11s
+load-gen-c46b68cff-hkv7r            1/1     Running   0            3m11s
+load-gen-c46b68cff-hzh4h            1/1     Running   0            4m41s
+load-gen-c46b68cff-k6fpm            1/1     Running   0            90s
+load-gen-c46b68cff-k6zfx            1/1     Running   0            3m11s
+load-gen-c46b68cff-l9wc9            1/1     Running   0            3m11s
+load-gen-c46b68cff-lnnfx            1/1     Running   0            4m41s
+load-gen-c46b68cff-p28gm            1/1     Running   0            4m40s
+load-gen-c46b68cff-p9bbq            1/1     Running   0            90s
+load-gen-c46b68cff-qkn9c            1/1     Running   0            4m41s
+load-gen-c46b68cff-t55jl            1/1     Running   0            90s
+load-gen-c46b68cff-tbbvz            1/1     Running   0            4m41s
+load-gen-c46b68cff-v544d            1/1     Running   0            3m11s
+load-gen-c46b68cff-wjd42            1/1     Running   0            3m11s
+load-gen-c46b68cff-wqvqt            1/1     Running   0            4m41s
+load-gen-c46b68cff-wsh6n            1/1     Running   0            3m11s
+load-gen-c46b68cff-xfjq9            1/1     Running   0            4m41s
+mongodb-0                           0/1     Running   7 (3s ago)   43m
 
-flask-deployment-565b8ccdfd-4kz2c   0/1     Running   1 (3s ago)   2m52s
-
-flask-deployment-565b8ccdfd-v2r5z   1/1     Running   0            2m47s
-Top Metrics:
+--- RESOURCE UTILIZATION (top pods) ---
 NAME                                CPU(cores)   MEMORY(bytes)   
+flask-deployment-587884f456-d95sl   154m         70Mi            
+flask-deployment-587884f456-qjhhm   153m         70Mi            
+load-gen-c46b68cff-2pvp9            20m          0Mi             
+load-gen-c46b68cff-8crx7            19m          0Mi             
+load-gen-c46b68cff-9j22b            20m          0Mi             
+load-gen-c46b68cff-b4kh4            23m          0Mi             
+load-gen-c46b68cff-bb9wz            22m          0Mi             
+load-gen-c46b68cff-bn5wj            24m          0Mi             
+load-gen-c46b68cff-fcczd            22m          1Mi             
+load-gen-c46b68cff-glgk4            20m          1Mi             
+load-gen-c46b68cff-hkv7r            23m          0Mi             
+load-gen-c46b68cff-hzh4h            22m          1Mi             
+load-gen-c46b68cff-k6fpm            25m          0Mi             
+load-gen-c46b68cff-k6zfx            21m          0Mi             
+load-gen-c46b68cff-l9wc9            23m          0Mi             
+load-gen-c46b68cff-lnnfx            20m          0Mi             
+load-gen-c46b68cff-p28gm            22m          0Mi             
+load-gen-c46b68cff-p9bbq            22m          0Mi             
+load-gen-c46b68cff-qkn9c            24m          0Mi             
+load-gen-c46b68cff-t55jl            20m          0Mi             
+load-gen-c46b68cff-tbbvz            23m          1Mi             
+load-gen-c46b68cff-v544d            23m          1Mi             
+load-gen-c46b68cff-wjd42            21m          0Mi             
+load-gen-c46b68cff-wqvqt            22m          0Mi             
+load-gen-c46b68cff-wsh6n            23m          0Mi             
+load-gen-c46b68cff-xfjq9            21m          0Mi             
+mongodb-0                           334m         442Mi           
 
-flask-deployment-565b8ccdfd-4kz2c   95m          70Mi            
 
-flask-deployment-565b8ccdfd-v2r5z   84m          70Mi
+======================================================
+[2026-11-19 01:55:02] SNAPSHOT - Load Gen (24 replicas) #9
+======================================================
+--- HPA STATUS ---
+NAME        REFERENCE                     TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+flask-hpa   Deployment/flask-deployment   cpu: 76%/70%   2         5         2          49m
 
-
-
-[CoolDown T+30s] HPA Status:
-NAME        REFERENCE                     TARGETS              MINPODS   MAXPODS   REPLICAS   AGE
-
-flask-hpa   Deployment/flask-deployment   cpu: <unknown>/70%   2         5         2          14m
-Pod Status:
+--- PODS (flask-app namespace) ---
 NAME                                READY   STATUS    RESTARTS      AGE
+flask-deployment-587884f456-d95sl   0/1     Running   0             7m58s
+flask-deployment-587884f456-qjhhm   1/1     Running   0             8m25s
+load-gen-c46b68cff-2pvp9            1/1     Running   0             100s
+load-gen-c46b68cff-8crx7            1/1     Running   0             4m52s
+load-gen-c46b68cff-9j22b            1/1     Running   0             101s
+load-gen-c46b68cff-b4kh4            1/1     Running   0             103s
+load-gen-c46b68cff-bb9wz            1/1     Running   0             102s
+load-gen-c46b68cff-bn5wj            1/1     Running   0             102s
+load-gen-c46b68cff-fcczd            1/1     Running   0             3m22s
+load-gen-c46b68cff-glgk4            1/1     Running   0             3m22s
+load-gen-c46b68cff-hkv7r            1/1     Running   0             3m22s
+load-gen-c46b68cff-hzh4h            1/1     Running   0             4m52s
+load-gen-c46b68cff-k6fpm            1/1     Running   0             101s
+load-gen-c46b68cff-k6zfx            1/1     Running   0             3m22s
+load-gen-c46b68cff-l9wc9            1/1     Running   0             3m22s
+load-gen-c46b68cff-lnnfx            1/1     Running   0             4m52s
+load-gen-c46b68cff-p28gm            1/1     Running   0             4m51s
+load-gen-c46b68cff-p9bbq            1/1     Running   0             101s
+load-gen-c46b68cff-qkn9c            1/1     Running   0             4m52s
+load-gen-c46b68cff-t55jl            1/1     Running   0             101s
+load-gen-c46b68cff-tbbvz            1/1     Running   0             4m52s
+load-gen-c46b68cff-v544d            1/1     Running   0             3m22s
+load-gen-c46b68cff-wjd42            1/1     Running   0             3m22s
+load-gen-c46b68cff-wqvqt            1/1     Running   0             4m52s
+load-gen-c46b68cff-wsh6n            1/1     Running   0             3m22s
+load-gen-c46b68cff-xfjq9            1/1     Running   0             4m52s
+mongodb-0                           0/1     Running   7 (14s ago)   43m
 
-flask-deployment-565b8ccdfd-4kz2c   1/1     Running   1 (14s ago)   3m3s
-
-flask-deployment-565b8ccdfd-v2r5z   1/1     Running   0             2m58s
-Top Metrics:
+--- RESOURCE UTILIZATION (top pods) ---
 NAME                                CPU(cores)   MEMORY(bytes)   
+flask-deployment-587884f456-d95sl   154m         70Mi            
+flask-deployment-587884f456-qjhhm   153m         70Mi            
+load-gen-c46b68cff-2pvp9            20m          0Mi             
+load-gen-c46b68cff-8crx7            19m          0Mi             
+load-gen-c46b68cff-9j22b            20m          0Mi             
+load-gen-c46b68cff-b4kh4            23m          0Mi             
+load-gen-c46b68cff-bb9wz            22m          0Mi             
+load-gen-c46b68cff-bn5wj            24m          0Mi             
+load-gen-c46b68cff-fcczd            22m          1Mi             
+load-gen-c46b68cff-glgk4            20m          1Mi             
+load-gen-c46b68cff-hkv7r            23m          0Mi             
+load-gen-c46b68cff-hzh4h            22m          1Mi             
+load-gen-c46b68cff-k6fpm            25m          0Mi             
+load-gen-c46b68cff-k6zfx            21m          0Mi             
+load-gen-c46b68cff-l9wc9            23m          0Mi             
+load-gen-c46b68cff-lnnfx            20m          0Mi             
+load-gen-c46b68cff-p28gm            22m          0Mi             
+load-gen-c46b68cff-p9bbq            22m          0Mi             
+load-gen-c46b68cff-qkn9c            24m          0Mi             
+load-gen-c46b68cff-t55jl            20m          0Mi             
+load-gen-c46b68cff-tbbvz            23m          1Mi             
+load-gen-c46b68cff-v544d            23m          1Mi             
+load-gen-c46b68cff-wjd42            21m          0Mi             
+load-gen-c46b68cff-wqvqt            22m          0Mi             
+load-gen-c46b68cff-wsh6n            23m          0Mi             
+load-gen-c46b68cff-xfjq9            21m          0Mi             
+mongodb-0                           334m         442Mi           
 
-flask-deployment-565b8ccdfd-v2r5z   99m          70Mi
 
+======================================================
+[2026-11-19 01:55:12] SNAPSHOT - Load Gen (24 replicas) #10
+======================================================
+--- HPA STATUS ---
+NAME        REFERENCE                     TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+flask-hpa   Deployment/flask-deployment   cpu: 76%/70%   2         5         2          49m
 
-
-[CoolDown T+40s] HPA Status:
-NAME        REFERENCE                     TARGETS              MINPODS   MAXPODS   REPLICAS   AGE
-
-flask-hpa   Deployment/flask-deployment   cpu: <unknown>/70%   2         5         2          14m
-Pod Status:
+--- PODS (flask-app namespace) ---
 NAME                                READY   STATUS    RESTARTS      AGE
+flask-deployment-587884f456-d95sl   0/1     Running   0             8m8s
+flask-deployment-587884f456-qjhhm   0/1     Running   0             8m35s
+load-gen-c46b68cff-2pvp9            1/1     Running   0             110s
+load-gen-c46b68cff-8crx7            1/1     Running   0             5m2s
+load-gen-c46b68cff-9j22b            1/1     Running   0             111s
+load-gen-c46b68cff-b4kh4            1/1     Running   0             113s
+load-gen-c46b68cff-bb9wz            1/1     Running   0             112s
+load-gen-c46b68cff-bn5wj            1/1     Running   0             112s
+load-gen-c46b68cff-fcczd            1/1     Running   0             3m32s
+load-gen-c46b68cff-glgk4            1/1     Running   0             3m32s
+load-gen-c46b68cff-hkv7r            1/1     Running   0             3m32s
+load-gen-c46b68cff-hzh4h            1/1     Running   0             5m2s
+load-gen-c46b68cff-k6fpm            1/1     Running   0             111s
+load-gen-c46b68cff-k6zfx            1/1     Running   0             3m32s
+load-gen-c46b68cff-l9wc9            1/1     Running   0             3m32s
+load-gen-c46b68cff-lnnfx            1/1     Running   0             5m2s
+load-gen-c46b68cff-p28gm            1/1     Running   0             5m1s
+load-gen-c46b68cff-p9bbq            1/1     Running   0             111s
+load-gen-c46b68cff-qkn9c            1/1     Running   0             5m2s
+load-gen-c46b68cff-t55jl            1/1     Running   0             111s
+load-gen-c46b68cff-tbbvz            1/1     Running   0             5m2s
+load-gen-c46b68cff-v544d            1/1     Running   0             3m32s
+load-gen-c46b68cff-wjd42            1/1     Running   0             3m32s
+load-gen-c46b68cff-wqvqt            1/1     Running   0             5m2s
+load-gen-c46b68cff-wsh6n            1/1     Running   0             3m32s
+load-gen-c46b68cff-xfjq9            1/1     Running   0             5m2s
+mongodb-0                           0/1     Running   7 (24s ago)   43m
 
-flask-deployment-565b8ccdfd-4kz2c   1/1     Running   1 (24s ago)   3m13s
-
-flask-deployment-565b8ccdfd-v2r5z   1/1     Running   0             3m8s
-Top Metrics:
+--- RESOURCE UTILIZATION (top pods) ---
 NAME                                CPU(cores)   MEMORY(bytes)   
+flask-deployment-587884f456-d95sl   154m         70Mi            
+flask-deployment-587884f456-qjhhm   153m         70Mi            
+load-gen-c46b68cff-2pvp9            20m          0Mi             
+load-gen-c46b68cff-8crx7            19m          0Mi             
+load-gen-c46b68cff-9j22b            20m          0Mi             
+load-gen-c46b68cff-b4kh4            23m          0Mi             
+load-gen-c46b68cff-bb9wz            22m          0Mi             
+load-gen-c46b68cff-bn5wj            24m          0Mi             
+load-gen-c46b68cff-fcczd            22m          1Mi             
+load-gen-c46b68cff-glgk4            20m          1Mi             
+load-gen-c46b68cff-hkv7r            23m          0Mi             
+load-gen-c46b68cff-hzh4h            22m          1Mi             
+load-gen-c46b68cff-k6fpm            25m          0Mi             
+load-gen-c46b68cff-k6zfx            21m          0Mi             
+load-gen-c46b68cff-l9wc9            23m          0Mi             
+load-gen-c46b68cff-lnnfx            20m          0Mi             
+load-gen-c46b68cff-p28gm            22m          0Mi             
+load-gen-c46b68cff-p9bbq            22m          0Mi             
+load-gen-c46b68cff-qkn9c            24m          0Mi             
+load-gen-c46b68cff-t55jl            20m          0Mi             
+load-gen-c46b68cff-tbbvz            23m          1Mi             
+load-gen-c46b68cff-v544d            23m          1Mi             
+load-gen-c46b68cff-wjd42            21m          0Mi             
+load-gen-c46b68cff-wqvqt            22m          0Mi             
+load-gen-c46b68cff-wsh6n            23m          0Mi             
+load-gen-c46b68cff-xfjq9            21m          0Mi             
+mongodb-0                           334m         442Mi           
 
-flask-deployment-565b8ccdfd-v2r5z   99m          70Mi
+
+>>> [2026-11-19 01:55:13] ACTION: Stopping load generator (deleting load-gen deployment) <<<
 
 
+======================================================
+[2026-11-19 01:55:23] SNAPSHOT - Cool-down / Scale-down
+======================================================
+--- HPA STATUS ---
+NAME        REFERENCE                     TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+flask-hpa   Deployment/flask-deployment   cpu: 76%/70%   2         5         2          49m
 
-[CoolDown T+50s] HPA Status:
-NAME        REFERENCE                     TARGETS              MINPODS   MAXPODS   REPLICAS   AGE
+--- PODS (flask-app namespace) ---
+NAME                                READY   STATUS        RESTARTS      AGE
+flask-deployment-587884f456-d95sl   1/1     Running       0             8m19s
+flask-deployment-587884f456-qjhhm   1/1     Running       0             8m46s
+load-gen-c46b68cff-2pvp9            1/1     Terminating   0             2m1s
+load-gen-c46b68cff-8crx7            1/1     Terminating   0             5m13s
+load-gen-c46b68cff-9j22b            1/1     Terminating   0             2m2s
+load-gen-c46b68cff-b4kh4            1/1     Terminating   0             2m4s
+load-gen-c46b68cff-bb9wz            1/1     Terminating   0             2m3s
+load-gen-c46b68cff-bn5wj            1/1     Terminating   0             2m3s
+load-gen-c46b68cff-fcczd            1/1     Terminating   0             3m43s
+load-gen-c46b68cff-glgk4            1/1     Terminating   0             3m43s
+load-gen-c46b68cff-hkv7r            1/1     Terminating   0             3m43s
+load-gen-c46b68cff-hzh4h            1/1     Terminating   0             5m13s
+load-gen-c46b68cff-k6fpm            1/1     Terminating   0             2m2s
+load-gen-c46b68cff-k6zfx            1/1     Terminating   0             3m43s
+load-gen-c46b68cff-l9wc9            1/1     Terminating   0             3m43s
+load-gen-c46b68cff-lnnfx            1/1     Terminating   0             5m13s
+load-gen-c46b68cff-p28gm            1/1     Terminating   0             5m12s
+load-gen-c46b68cff-p9bbq            1/1     Terminating   0             2m2s
+load-gen-c46b68cff-qkn9c            1/1     Terminating   0             5m13s
+load-gen-c46b68cff-t55jl            1/1     Terminating   0             2m2s
+load-gen-c46b68cff-tbbvz            1/1     Terminating   0             5m13s
+load-gen-c46b68cff-v544d            1/1     Terminating   0             3m43s
+load-gen-c46b68cff-wjd42            1/1     Terminating   0             3m43s
+load-gen-c46b68cff-wqvqt            1/1     Terminating   0             5m13s
+load-gen-c46b68cff-wsh6n            1/1     Terminating   0             3m43s
+load-gen-c46b68cff-xfjq9            1/1     Terminating   0             5m13s
+mongodb-0                           1/1     Running       7 (35s ago)   43m
 
-flask-hpa   Deployment/flask-deployment   cpu: <unknown>/70%   2         5         2          14m
-Pod Status:
-NAME                                READY   STATUS    RESTARTS      AGE
-
-flask-deployment-565b8ccdfd-4kz2c   1/1     Running   1 (35s ago)   3m24s
-
-flask-deployment-565b8ccdfd-v2r5z   1/1     Running   0             3m19s
-Top Metrics:
+--- RESOURCE UTILIZATION (top pods) ---
 NAME                                CPU(cores)   MEMORY(bytes)   
+flask-deployment-587884f456-d95sl   154m         70Mi            
+flask-deployment-587884f456-qjhhm   153m         70Mi            
+load-gen-c46b68cff-2pvp9            20m          0Mi             
+load-gen-c46b68cff-8crx7            19m          0Mi             
+load-gen-c46b68cff-9j22b            20m          0Mi             
+load-gen-c46b68cff-b4kh4            23m          0Mi             
+load-gen-c46b68cff-bb9wz            22m          0Mi             
+load-gen-c46b68cff-bn5wj            24m          0Mi             
+load-gen-c46b68cff-fcczd            22m          1Mi             
+load-gen-c46b68cff-glgk4            20m          1Mi             
+load-gen-c46b68cff-hkv7r            23m          0Mi             
+load-gen-c46b68cff-hzh4h            22m          1Mi             
+load-gen-c46b68cff-k6fpm            25m          0Mi             
+load-gen-c46b68cff-k6zfx            21m          0Mi             
+load-gen-c46b68cff-l9wc9            23m          0Mi             
+load-gen-c46b68cff-lnnfx            20m          0Mi             
+load-gen-c46b68cff-p28gm            22m          0Mi             
+load-gen-c46b68cff-p9bbq            22m          0Mi             
+load-gen-c46b68cff-qkn9c            24m          0Mi             
+load-gen-c46b68cff-t55jl            20m          0Mi             
+load-gen-c46b68cff-tbbvz            23m          1Mi             
+load-gen-c46b68cff-v544d            23m          1Mi             
+load-gen-c46b68cff-wjd42            21m          0Mi             
+load-gen-c46b68cff-wqvqt            22m          0Mi             
+load-gen-c46b68cff-wsh6n            23m          0Mi             
+load-gen-c46b68cff-xfjq9            21m          0Mi             
+mongodb-0                           334m         442Mi           
 
-flask-deployment-565b8ccdfd-v2r5z   99m          70Mi
 
+======================================================
+[2026-11-19 01:55:35] SNAPSHOT - Cool-down confirmed at 2 replicas
+======================================================
+--- HPA STATUS ---
+NAME        REFERENCE                     TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+flask-hpa   Deployment/flask-deployment   cpu: 76%/70%   2         5         2          49m
 
+--- PODS (flask-app namespace) ---
+NAME                                READY   STATUS        RESTARTS      AGE
+flask-deployment-587884f456-d95sl   1/1     Running       0             8m32s
+flask-deployment-587884f456-qjhhm   1/1     Running       0             8m59s
+load-gen-c46b68cff-2pvp9            1/1     Terminating   0             2m14s
+load-gen-c46b68cff-8crx7            1/1     Terminating   0             5m26s
+load-gen-c46b68cff-9j22b            1/1     Terminating   0             2m15s
+load-gen-c46b68cff-b4kh4            1/1     Terminating   0             2m17s
+load-gen-c46b68cff-bb9wz            1/1     Terminating   0             2m16s
+load-gen-c46b68cff-bn5wj            1/1     Terminating   0             2m16s
+load-gen-c46b68cff-fcczd            1/1     Terminating   0             3m56s
+load-gen-c46b68cff-glgk4            1/1     Terminating   0             3m56s
+load-gen-c46b68cff-hkv7r            1/1     Terminating   0             3m56s
+load-gen-c46b68cff-hzh4h            1/1     Terminating   0             5m26s
+load-gen-c46b68cff-k6fpm            1/1     Terminating   0             2m15s
+load-gen-c46b68cff-k6zfx            1/1     Terminating   0             3m56s
+load-gen-c46b68cff-l9wc9            1/1     Terminating   0             3m56s
+load-gen-c46b68cff-lnnfx            1/1     Terminating   0             5m26s
+load-gen-c46b68cff-p28gm            1/1     Terminating   0             5m25s
+load-gen-c46b68cff-p9bbq            1/1     Terminating   0             2m15s
+load-gen-c46b68cff-qkn9c            1/1     Terminating   0             5m26s
+load-gen-c46b68cff-t55jl            1/1     Terminating   0             2m15s
+load-gen-c46b68cff-tbbvz            1/1     Terminating   0             5m26s
+load-gen-c46b68cff-v544d            1/1     Terminating   0             3m56s
+load-gen-c46b68cff-wjd42            1/1     Terminating   0             3m56s
+load-gen-c46b68cff-wqvqt            1/1     Terminating   0             5m26s
+load-gen-c46b68cff-wsh6n            1/1     Terminating   0             3m56s
+load-gen-c46b68cff-xfjq9            1/1     Terminating   0             5m26s
+mongodb-0                           1/1     Running       7 (48s ago)   44m
 
-[CoolDown T+60s] HPA Status:
-NAME        REFERENCE                     TARGETS              MINPODS   MAXPODS   REPLICAS   AGE
-
-flask-hpa   Deployment/flask-deployment   cpu: <unknown>/70%   2         5         2          14m
-Pod Status:
-NAME                                READY   STATUS    RESTARTS      AGE
-
-flask-deployment-565b8ccdfd-4kz2c   1/1     Running   1 (45s ago)   3m34s
-
-flask-deployment-565b8ccdfd-v2r5z   1/1     Running   0             3m29s
-Top Metrics:
+--- RESOURCE UTILIZATION (top pods) ---
 NAME                                CPU(cores)   MEMORY(bytes)   
-
-flask-deployment-565b8ccdfd-v2r5z   99m          70Mi
-
-
-
-[CoolDown T+70s] HPA Status:
-NAME        REFERENCE                     TARGETS              MINPODS   MAXPODS   REPLICAS   AGE
-
-flask-hpa   Deployment/flask-deployment   cpu: <unknown>/70%   2         5         2          15m
-Pod Status:
-NAME                                READY   STATUS    RESTARTS      AGE
-
-flask-deployment-565b8ccdfd-4kz2c   1/1     Running   1 (56s ago)   3m45s
-
-flask-deployment-565b8ccdfd-v2r5z   1/1     Running   0             3m40s
-Top Metrics:
-NAME                                CPU(cores)   MEMORY(bytes)   
-
-flask-deployment-565b8ccdfd-v2r5z   99m          70Mi
-
-
-
-[CoolDown T+80s] HPA Status:
-NAME        REFERENCE                     TARGETS              MINPODS   MAXPODS   REPLICAS   AGE
-
-flask-hpa   Deployment/flask-deployment   cpu: <unknown>/70%   2         5         2          15m
-Pod Status:
-NAME                                READY   STATUS    RESTARTS      AGE
-
-flask-deployment-565b8ccdfd-4kz2c   1/1     Running   1 (66s ago)   3m55s
-
-flask-deployment-565b8ccdfd-v2r5z   1/1     Running   0             3m50s
-Top Metrics:
-NAME                                CPU(cores)   MEMORY(bytes)   
-
-flask-deployment-565b8ccdfd-4kz2c   6m           69Mi            
-
-flask-deployment-565b8ccdfd-v2r5z   5m           69Mi
+flask-deployment-587884f456-d95sl   154m         70Mi            
+flask-deployment-587884f456-qjhhm   153m         70Mi            
+load-gen-c46b68cff-2pvp9            20m          0Mi             
+load-gen-c46b68cff-8crx7            19m          0Mi             
+load-gen-c46b68cff-9j22b            20m          0Mi             
+load-gen-c46b68cff-b4kh4            23m          0Mi             
+load-gen-c46b68cff-bb9wz            22m          0Mi             
+load-gen-c46b68cff-bn5wj            24m          0Mi             
+load-gen-c46b68cff-fcczd            22m          1Mi             
+load-gen-c46b68cff-glgk4            20m          1Mi             
+load-gen-c46b68cff-hkv7r            23m          0Mi             
+load-gen-c46b68cff-hzh4h            22m          1Mi             
+load-gen-c46b68cff-k6fpm            25m          0Mi             
+load-gen-c46b68cff-k6zfx            21m          0Mi             
+load-gen-c46b68cff-l9wc9            23m          0Mi             
+load-gen-c46b68cff-lnnfx            20m          0Mi             
+load-gen-c46b68cff-p28gm            22m          0Mi             
+load-gen-c46b68cff-p9bbq            22m          0Mi             
+load-gen-c46b68cff-qkn9c            24m          0Mi             
+load-gen-c46b68cff-t55jl            20m          0Mi             
+load-gen-c46b68cff-tbbvz            23m          1Mi             
+load-gen-c46b68cff-v544d            23m          1Mi             
+load-gen-c46b68cff-wjd42            21m          0Mi             
+load-gen-c46b68cff-wqvqt            22m          0Mi             
+load-gen-c46b68cff-wsh6n            23m          0Mi             
+load-gen-c46b68cff-xfjq9            21m          0Mi             
+mongodb-0                           334m         442Mi           
 
 
+======================================================
+FINAL HPA DESCRIBE AND EVENTS
+Captured at: 2026-11-19 01:55:37
+======================================================
 
-[CoolDown T+90s] HPA Status:
-NAME        REFERENCE                     TARGETS              MINPODS   MAXPODS   REPLICAS   AGE
-
-flask-hpa   Deployment/flask-deployment   cpu: <unknown>/70%   2         5         2          15m
-Pod Status:
-NAME                                READY   STATUS    RESTARTS      AGE
-
-flask-deployment-565b8ccdfd-4kz2c   1/1     Running   1 (77s ago)   4m6s
-
-flask-deployment-565b8ccdfd-v2r5z   1/1     Running   0             4m1s
-Top Metrics:
-NAME                                CPU(cores)   MEMORY(bytes)   
-
-flask-deployment-565b8ccdfd-4kz2c   6m           69Mi            
-
-flask-deployment-565b8ccdfd-v2r5z   5m           69Mi
-
-
-
-[CoolDown T+100s] HPA Status:
-NAME        REFERENCE                     TARGETS              MINPODS   MAXPODS   REPLICAS   AGE
-
-flask-hpa   Deployment/flask-deployment   cpu: <unknown>/70%   2         5         2          15m
-Pod Status:
-NAME                                READY   STATUS    RESTARTS      AGE
-
-flask-deployment-565b8ccdfd-4kz2c   1/1     Running   1 (87s ago)   4m16s
-
-flask-deployment-565b8ccdfd-v2r5z   1/1     Running   0             4m11s
-Top Metrics:
-NAME                                CPU(cores)   MEMORY(bytes)   
-
-flask-deployment-565b8ccdfd-4kz2c   6m           69Mi            
-
-flask-deployment-565b8ccdfd-v2r5z   5m           69Mi
-
-
-
-=== HPA LOAD TEST COMPLETED ===
-
-End Time: 2026-11-19 00:56:14
+Name:                                                  flask-hpa
+Namespace:                                             flask-app
+Labels:                                                app.kubernetes.io/name=flask-app
+                                                       app.kubernetes.io/part-of=assignment
+Annotations:                                           <none>
+CreationTimestamp:                                     Thu, 19 Nov 2026 01:05:58 +0530
+Reference:                                             Deployment/flask-deployment
+Metrics:                                               ( current / target )
+  resource cpu on pods  (as a percentage of request):  76% (153m) / 70%
+Min replicas:                                          2
+Max replicas:                                          5
+Behavior:
+  Scale Up:
+    Stabilization Window: 0 seconds
+    Select Policy: Max
+    Policies:
+      - Type: Percent  Value: 100  Period: 15 seconds
+      - Type: Pods     Value: 2    Period: 15 seconds
+  Scale Down:
+    Stabilization Window: 60 seconds
+    Select Policy: Max
+    Policies:
+      - Type: Percent  Value: 100  Period: 15 seconds
+Deployment pods:       2 current / 2 desired
+Conditions:
+  Type            Status  Reason              Message
+  ----            ------  ------              -------
+  AbleToScale     True    ReadyForNewScale    recommended size matches current size
+  ScalingActive   True    ValidMetricFound    the HPA was able to successfully calculate a replica count from cpu resource utilization (percentage of request)
+  ScalingLimited  False   DesiredWithinRange  the desired count is within the acceptable range
+  ScaledToZero    False   NotScaledToZero     the HPA controller did not scale the workload to zero
+Events:
+  Type     Reason                        Age                   From                       Message
+  ----     ------                        ----                  ----                       -------
+  Normal   SuccessfulRescale             13m                   horizontal-pod-autoscaler  New size: 3; reason: cpu resource utilization (percentage of request) above target
+  Warning  FailedGetResourceMetric       8m (x13 over 49m)     horizontal-pod-autoscaler  failed to get cpu utilization: unable to get metrics for resource cpu: no metrics returned from resource metrics API
+  Warning  FailedComputeMetricsReplicas  8m (x13 over 49m)     horizontal-pod-autoscaler  invalid metrics (1 invalid out of 1), first error is: failed to get cpu resource metric value: failed to get cpu utilization: unable to get metrics for resource cpu: no metrics returned from resource metrics API
+  Warning  FailedComputeMetricsReplicas  7m45s (x21 over 48m)  horizontal-pod-autoscaler  invalid metrics (1 invalid out of 1), first error is: failed to get cpu resource metric value: failed to get cpu utilization: did not receive metrics for targeted pods (pods might be unready)
+  Warning  FailedGetResourceMetric       7m30s (x22 over 48m)  horizontal-pod-autoscaler  failed to get cpu utilization: did not receive metrics for targeted pods (pods might be unready)
+  Normal   SuccessfulRescale             3m27s (x2 over 18m)   horizontal-pod-autoscaler  New size: 4; reason: cpu resource utilization (percentage of request) above target
+  Normal   SuccessfulRescale             104s (x3 over 17m)    horizontal-pod-autoscaler  New size: 2; reason: All metrics below target
 
