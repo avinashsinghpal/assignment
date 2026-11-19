@@ -235,6 +235,11 @@ minikube image load avinashsingh231/flask-mongodb-app:v1.0.0
 ```
 *Note on `eval $(minikube docker-env)`*: On Linux/macOS or bash shells, executing `eval $(minikube docker-env)` points your host `docker` CLI directly to Minikube's internal Docker daemon, allowing you to build directly inside Minikube (`docker build -t avinashsingh231/flask-mongodb-app:v1.0.0 ./app`) without copying layers.
 
+### Docker Hub Registry
+
+![Docker Hub Repository Image](docs/screenshots/10-dockerhub-image.png)
+*Docker Hub container registry showing `avinashsingh231/flask-mongodb-app:v1.0.0` repository and tag.*
+
 ---
 
 ## 6. Virtual Environment Benefits
@@ -376,6 +381,9 @@ Testing targeted `GET /` instead of `/data` to isolate and directly exercise Fla
 
 #### Test Execution Timeline
 
+![HPA Baseline](docs/screenshots/02-hpa-baseline.png)
+*HPA baseline: 2 replicas operating at idle CPU (~2%), prior to load injection.*
+
 Data captured from live watch (`tests/05_hpa_watch.log`) and verified against HPA controller events (`tests/05_hpa_describe.log`):
 
 | Timestamp (HH:mm:ss) | Phase | Target Metric (% of 200m request) | Current Replicas | Cluster Observations & Event Correlation |
@@ -398,26 +406,24 @@ Data captured from live watch (`tests/05_hpa_watch.log`) and verified against HP
 
 - **Scale-Up Responsiveness (15 seconds)**:
   From the first high-CPU reading (`11:27:27` at 129%) to the deployment reaching 4 replicas (`11:27:42`), scaling took about 15 seconds. This directly corresponds to the Kubernetes HPA evaluation cadence (`--horizontal-pod-autoscaler-sync-period` = 15s) and the HPA `scaleUp` policy (`selectPolicy: Max`, `type: Pods, value: 2, periodSeconds: 15`), scaling immediately by 2 pods without an artificial scale-up stabilization delay (`stabilizationWindowSeconds: 0`).
+
+  ![HPA Scaling Up](docs/screenshots/03-hpa-scaling-up.png)
+  *HPA scaling up: CPU utilization surges past the 70% threshold under load.*
+
 - **Scale-Down Stabilization (60 seconds)**:
   Once the load generator was deleted, CPU dropped to 1% at `11:37:33`. The HPA maintained 4 replicas until `11:38:33` (about 60 seconds), obeying `behavior.scaleDown.stabilizationWindowSeconds: 60` to protect against traffic thrashing/flapping before cleanly consolidating back to the baseline of 2 replicas.
+
+  ![HPA Scale Down](docs/screenshots/05-hpa-scale-down.png)
+  *HPA cool-down: traffic terminates, stabilization window elapses, and deployment returns to 2 replicas.*
+
 - **Why Peak Replicas Reached 4 (Not 5)**:
   The deployment peaked at **4 replicas** and did not scale to the maximum of 5. When the 2 original pods were scaled to 4, the deployment's aggregate CPU request pool expanded from 400m to 800m ($4 \times 200\text{m}$). The concurrent load was absorbed across the 4 pods at ~130m–136m each, resulting in 65%–68% utilization. Because Kubernetes HPA implements a default **10% tolerance band** around the target utilization ($\frac{|67\% - 70\%|}{70\%} = 4.3\% < 10\%$), any metric between 63% and 77% does not trigger an autoscaling adjustment. Consequently, the cluster stabilized cleanly at 4 replicas.
+
+  ![HPA Peak Utilization](docs/screenshots/04-hpa-peak.png)
+  *HPA peak load: 4 replicas running concurrently with load evenly balanced.*
+
 - **Metrics Integrity**:
   Zero `<unknown>` readings occurred throughout `tests/05_hpa_watch.log`. The metrics-server consistently collected and reported valid CPU utilization percentages at every scrape interval.
-
-#### Screenshots
-
-![HPA Baseline](docs/screenshots/02-hpa-baseline.png)
-*HPA baseline: 2 replicas operating at idle CPU (~2%).*
-
-![HPA Scaling Up](docs/screenshots/03-hpa-scaling-up.png)
-*HPA scaling up: CPU utilization surges past the 70% threshold under load.*
-
-![HPA Peak Utilization](docs/screenshots/04-hpa-peak.png)
-*HPA peak load: 4 replicas running concurrently with load evenly balanced.*
-
-![HPA Scale Down](docs/screenshots/05-hpa-scale-down.png)
-*HPA cool-down: traffic terminates, stabilization window elapses, and deployment returns to 2 replicas.*
 
 #### Issues Encountered & Engineering Mitigations
 
@@ -442,13 +448,6 @@ Data captured from live watch (`tests/05_hpa_watch.log`) and verified against HP
 2. **Metrics-Server Initial Polling Lag (`<unknown>`)**:
    - *Observation*: Immediately following a deployment rollout, `kubectl get hpa` reports `cpu: <unknown>/70%` for roughly 30 to 45 seconds.
    - *Mitigation*: Documented as expected Kubernetes metrics-server behavior; the metrics scraper queries the kubelet summary API on a 30-second cadence.
-
----
-
-### 6. Container Image & Registry Verification
-
-![Docker Hub Repository Image](docs/screenshots/10-dockerhub-image.png)
-*Docker Hub container registry showing `avinashsingh231/flask-mongodb-app:v1.0.0` repository and tag.*
 
 ---
 
