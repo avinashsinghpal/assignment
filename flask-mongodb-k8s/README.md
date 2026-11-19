@@ -348,6 +348,7 @@ Demonstrated inside the cluster via in-cluster client:
 
 ![MongoDB Authentication Test](docs/screenshots/07-auth-test.png)
 *Authentication verification proving unauthorized access is blocked while valid secret credentials succeed.*
+*Captured in an earlier test run; authentication configuration was unchanged by the later probe fix.*
 
 ### 3. Data Persistence Verification (`tests/03_data_persistence.log`)
 - Inserted unique test record: `{"test_id":"persistence-712421697"}` via `POST /data`.
@@ -383,22 +384,22 @@ Data captured from live watch (`tests/05_hpa_watch.log`) and verified against HP
 | **11:25:26** | Baseline Idle | 1% / 70% | 2 | Metrics stable at low CPU usage (~2m–4m per pod) |
 | **11:26:26** | Pre-load Idle | 3% / 70% | 2 | Pre-test idle check; cluster healthy |
 | **11:27:27** | Load Injected | **129% / 70%** | 2 | Traffic starts; first reading above 70% threshold (258m avg / pod) |
-| **11:27:42** | Scale-Up Triggered | **129% / 70%** | **4 (Scaled)** | Exactly 15s after spike: HPA rescales to 4 replicas (`New size: 4`) |
+| **11:27:42** | Scale-Up Triggered | **129% / 70%** | **4 (Scaled)** | About 15 seconds after spike: HPA rescales to 4 replicas (`New size: 4`) |
 | **11:28:28** | Load Absorption | 88% / 70% | 4 | Load distributed across 4 pods; per-pod CPU begins normalizing |
 | **11:29:28** | Steady-State Load | 67% / 70% | 4 | CPU enters HPA 10% tolerance band ([63%–77%]); scaling stabilizes |
 | **11:31:30 – 11:35:32** | Sustained Traffic | 65% – 68% / 70% | 4 | Consistent concurrency across 4 pods (65%, 66%, 67%, 68%, 68%) |
-| **11:36:33** | Late Load Phase | 61% / 70% | 4 | Stable throughput maintained with 0 container restarts |
-| **11:37:33** | Load Generator Deleted | 1% / 70% | 4 | `load-gen` deleted; traffic terminates; CPU immediately collapses to 1% |
+| **11:36:33** | Late Load Phase | 61% / 70% | 4 | Stable throughput maintained with no restarts observed (see screenshots 01 and 04) |
+| **11:37:33** | Load stopped (~11:37; deletion time not logged, first 1% reading shown) | 1% / 70% | 4 | `load-gen` deleted; traffic terminates; CPU immediately collapses to 1% |
 | **11:38:18** | Cool-down Window | 1% / 70% | 4 | 60-second scale-down stabilization window actively running |
-| **11:38:33** | Scale-Down Triggered | **2% / 70%** | **2 (Baseline)** | Exactly 60s post-traffic: HPA rescales to baseline (`New size: 2`) |
-| **11:41:33 – 11:42:33** | Post-Test Idle | 1% – 2% / 70% | 2 | Baseline restored; cluster 100% healthy with 0 restarts |
+| **11:38:33** | Scale-Down Triggered | **2% / 70%** | **2 (Baseline)** | About 60 seconds post-traffic: HPA rescales to baseline (`New size: 2`) |
+| **11:41:33 – 11:42:33** | Post-Test Idle | 1% – 2% / 70% | 2 | Baseline restored; cluster 100% healthy with no restarts observed (see screenshots 01 and 04) |
 
 #### Autoscaling Behavior Analysis & Interpretation
 
 - **Scale-Up Responsiveness (15 seconds)**:
-  From the first high-CPU reading (`11:27:27` at 129%) to the deployment reaching 4 replicas (`11:27:42`), scaling took exactly **15 seconds**. This directly corresponds to the Kubernetes HPA evaluation cadence (`--horizontal-pod-autoscaler-sync-period` = 15s) and the HPA `scaleUp` policy (`selectPolicy: Max`, `type: Pods, value: 2, periodSeconds: 15`), scaling immediately by 2 pods without an artificial scale-up stabilization delay (`stabilizationWindowSeconds: 0`).
+  From the first high-CPU reading (`11:27:27` at 129%) to the deployment reaching 4 replicas (`11:27:42`), scaling took about 15 seconds. This directly corresponds to the Kubernetes HPA evaluation cadence (`--horizontal-pod-autoscaler-sync-period` = 15s) and the HPA `scaleUp` policy (`selectPolicy: Max`, `type: Pods, value: 2, periodSeconds: 15`), scaling immediately by 2 pods without an artificial scale-up stabilization delay (`stabilizationWindowSeconds: 0`).
 - **Scale-Down Stabilization (60 seconds)**:
-  Once the load generator was deleted, CPU dropped to 1% at `11:37:33`. The HPA maintained 4 replicas until `11:38:33` (exactly **60 seconds**), obeying `behavior.scaleDown.stabilizationWindowSeconds: 60` to protect against traffic thrashing/flapping before cleanly consolidating back to the baseline of 2 replicas.
+  Once the load generator was deleted, CPU dropped to 1% at `11:37:33`. The HPA maintained 4 replicas until `11:38:33` (about 60 seconds), obeying `behavior.scaleDown.stabilizationWindowSeconds: 60` to protect against traffic thrashing/flapping before cleanly consolidating back to the baseline of 2 replicas.
 - **Why Peak Replicas Reached 4 (Not 5)**:
   The deployment peaked at **4 replicas** and did not scale to the maximum of 5. When the 2 original pods were scaled to 4, the deployment's aggregate CPU request pool expanded from 400m to 800m ($4 \times 200\text{m}$). The concurrent load was absorbed across the 4 pods at ~130m–136m each, resulting in 65%–68% utilization. Because Kubernetes HPA implements a default **10% tolerance band** around the target utilization ($\frac{|67\% - 70\%|}{70\%} = 4.3\% < 10\%$), any metric between 63% and 77% does not trigger an autoscaling adjustment. Consequently, the cluster stabilized cleanly at 4 replicas.
 - **Metrics Integrity**:
@@ -435,8 +436,8 @@ Data captured from live watch (`tests/05_hpa_watch.log`) and verified against HP
    - **Engineering Fix Applied**:
      1. **Decoupled Flask Liveness from Database**: Switched `livenessProbe` in `k8s/05-flask-deployment.yaml` to `httpGet /` (process responsiveness only, 0 database queries, `timeoutSeconds: 5`, `failureThreshold: 5`). Kept `readinessProbe` on `/health` (so an unready database temporarily removes Flask from Service endpoints without killing the process).
      2. **Lightweight MongoDB TCP Probes**: Replaced all three heavy `mongosh` exec probes in `k8s/03-mongo-statefulset.yaml` with zero-overhead `tcpSocket: port: 27017` probes (`startupProbe` period 5s, failureThreshold 30; `livenessProbe` period 15s, timeout 5s, failureThreshold 6; `readinessProbe` period 10s, timeout 5s, failureThreshold 6).
-   - **Result**: Cluster stability fully restored. Pods withstand database latency gracefully; Flask pods remain 1/1 Running without restarting.
-   - *Historical Comparison with Run 1 (`tests/05a_hpa_run1_pre_probe_fix.log`)*: In that earlier pre-probe-fix run, the HPA scaled from 2 to 4 replicas, but then prematurely scaled back down to 2 while the load generator was still running due to metric scrape instability during container restarts, and the post-load cool-down was not captured. Decoupling the Flask liveness probe from the database, switching MongoDB to lightweight TCP probes, and generating load directly on `/` completely eliminated probe cascades, producing the stable, deterministic autoscaling behavior documented above.
+   - **Result**: No probe cascade was observed in the re-run. Note: the re-run loaded GET / (no database access); database-heavy load on /data was not re-tested after the fix.
+   - *Historical Comparison with Run 1 (`tests/05a_hpa_run1_pre_probe_fix.log`)*: In that earlier pre-probe-fix run, the HPA scaled from 2 to 4 replicas, but then prematurely scaled back down to 2 while the load generator was still running likely because of metric instability during container restarts (not verified), and the post-load cool-down was not captured. Decoupling the Flask liveness probe from the database, switching MongoDB to lightweight TCP probes, and generating load directly on `/` produced the stable, deterministic autoscaling behavior documented above.
 
 2. **Metrics-Server Initial Polling Lag (`<unknown>`)**:
    - *Observation*: Immediately following a deployment rollout, `kubectl get hpa` reports `cpu: <unknown>/70%` for roughly 30 to 45 seconds.
