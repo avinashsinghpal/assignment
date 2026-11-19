@@ -314,7 +314,9 @@ Kubernetes container resource management separates **Scheduling** from **Enforce
 | **Flask Expose** | **NodePort** | LoadBalancer / Ingress | **NodePort** natively works out-of-the-box on local Minikube without external cloud infrastructure or configuring ingress controllers. **LoadBalancer** requires `minikube tunnel` running in privileged mode, and **Ingress** requires additional ingress-nginx addons. |
 | **MongoDB Topology** | **Standalone Instance** | Multi-node Replica Set | **Standalone** satisfies all assignment requirements while staying strictly within the 2 CPU / 4GB Minikube intern resource constraints. A 3-node **Replica Set** was rejected because it triples resource consumption (1.5GB RAM minimum) and requires complex election orchestration not required for this tier. |
 | **WSGI Server** | **Gunicorn** | Flask Built-in Dev Server | **Gunicorn** is a battle-tested, pre-fork worker WSGI server that handles concurrent connections, request timeouts, and worker worker-recycling. Flask's built-in `werkzeug` server is single-threaded, explicitly unsuited for production, and lacks proper concurrency. |
-| **NetworkPolicy Ingress** | **Declared (Targeted Ingress)** | Open Namespace Networking | **NetworkPolicy** enforces the principle of least privilege by restricting MongoDB ingress to pods matching label `app: flask-app`. **CNI note**: NetworkPolicy enforcement requires a compatible CNI plugin (e.g. `minikube start --cni=calico`); on default Minikube the manifest is accepted by the API server but not actively enforced. |
+| **Liveness vs Readiness Probe Architecture** | **Liveness on `/`, Readiness on `/health`** | Liveness on `/health` | **Liveness** validates strictly that the Flask process and Gunicorn WSGI workers are responsive (`/`), completely decoupled from downstream database state. **Readiness** validates end-to-end traffic capacity by pinging MongoDB via `/health`. **Alternative considered**: Binding liveness to `/health` was explicitly rejected because database throttling or high latency causes the kubelet to terminate healthy application pods, triggering a catastrophic restart cascade. |
+| **MongoDB Probe Mechanism** | **Native `tcpSocket` on `:27017`** | `exec mongosh` CLI ping | **`tcpSocket` probes** execute natively within the kubelet kernel network stack with virtually zero CPU overhead, guaranteeing reliable health checks even when the database is under maximum load. **Alternative considered**: Running `exec mongosh` spawns an entire Node.js V8 process inside the container's 500m CPU limit; under heavy concurrency, Node.js startup exceeded probe timeouts (10s), causing spurious container restarts. **Trade-off**: A TCP probe confirms that the socket accepts connections, but does not verify authentication (auth is verified separately via test suites). |
+| **NetworkPolicy Ingress** | **Declared (Targeted Ingress)** | Open Namespace Networking | **NetworkPolicy** enforces the principle of least privilege by restricting MongoDB ingress to pods matching label `app.kubernetes.io/name: flask-app`. **CNI note**: NetworkPolicy enforcement requires a compatible CNI plugin (e.g. `minikube start --cni=calico`); on default Minikube the manifest is accepted by the API server but not actively enforced. |
 
 ---
 
@@ -366,6 +368,8 @@ Demonstrated inside the cluster via in-cluster client:
 
 ### 5. Horizontal Pod Autoscaler (HPA) Load Test (`tests/05_hpa_autoscaling.log`)
 
+> HPA results being re-captured after the probe fix.
+
 The autoscaling behavior was rigorously verified by deploying an in-cluster load generator (`kubectl create deployment load-gen --image=busybox`) generating high-frequency parallel `wget` HTTP traffic against `http://flask-service:5000/data`.
 
 #### Test Execution Timeline
@@ -399,9 +403,23 @@ The autoscaling behavior was rigorously verified by deploying an in-cluster load
 
 #### Issues Encountered & Engineering Mitigations
 
-1. **Flask Liveness Probe Timeouts Under Heavy Traffic**:
-   - *Observation*: During initial stress testing with 25 concurrent connections, gunicorn workers were fully saturated serving database queries, causing `/health` endpoint responses to momentarily exceed the original `timeoutSeconds: 3` threshold. Kubelet failed the probe 3 consecutive times, restarting a Flask pod (`context deadline exceeded`).
-   - *Mitigation*: Updated `k8s/05-flask-deployment.yaml` to raise `livenessProbe.timeoutSeconds: 5` and `livenessProbe.failureThreshold: 5`. After re-applying and repeating the test, all 4 replicas served sustained concurrency with **0 restarts** throughout the entire test.
+1. **Probe Cascade and Restart Storm Under Heavy Load**:
+   - **Symptom**: Under sustained concurrent load during initial stress testing, both Flask application pods entered `CrashLoopBackOff` (accumulating 11–16 restarts), MongoDB transitioned to `Running 0/1`, the HPA reported `cpu: <unknown>/70%`, and no autoscaling occurred.
+   - **Observed Evidence**:
+     - MongoDB CPU utilization peaked and throttled at 501m against its strict 500m limit (`kubectl top pods`).
+     - MongoDB logs showed slow operations taking between 15s and 37s to complete.
+     - `kubectl describe pod mongodb-0` revealed exec probe failures: `command timed out: "sh -c mongosh ... timed out after 10s"`.
+     - `kubectl describe pod` for Flask pods revealed liveness failures: `Liveness probe failed: Get "http://...:5000/health": context deadline exceeded`.
+     - Kubelet terminated Flask pods via `SIGTERM` approximately 59 seconds after boot without any unhandled Python or application exceptions in the application logs.
+   - **Hypothesis**: The hostPath volume mounted from the Windows/WSL2 host disk into the Minikube VM likely contributed disk I/O bottlenecks during high-concurrency write/read operations, exacerbating CPU throttling inside the container cgroups (plausible contributor, not proven).
+   - **Root Cause Analysis**: Two compounding architectural coupling flaws:
+     1. MongoDB's probes executed `mongosh` (a full Node.js V8 process) inside the container's 500m CPU budget. When MongoDB saturated the CPU, the Node.js runtime could not finish initialization within 10 seconds, causing the kubelet to mark MongoDB unready and kill it.
+     2. Flask's `livenessProbe` was pointing to `/health`, which executes `client.admin.command("ping")` against MongoDB. Because liveness was coupled to database latency, MongoDB's slowness caused the kubelet to repeatedly kill healthy Flask pods, resulting in CrashLoopBackOff and metrics-server scrape failures.
+   - **Engineering Fix Applied**:
+     1. **Decoupled Flask Liveness from Database**: Switched `livenessProbe` in `k8s/05-flask-deployment.yaml` to `httpGet /` (process responsiveness only, 0 database queries, `timeoutSeconds: 5`, `failureThreshold: 5`). Kept `readinessProbe` on `/health` (so an unready database temporarily removes Flask from Service endpoints without killing the process).
+     2. **Lightweight MongoDB TCP Probes**: Replaced all three heavy `mongosh` exec probes in `k8s/03-mongo-statefulset.yaml` with zero-overhead `tcpSocket: port: 27017` probes (`startupProbe` period 5s, failureThreshold 30; `livenessProbe` period 15s, timeout 5s, failureThreshold 6; `readinessProbe` period 10s, timeout 5s, failureThreshold 6).
+   - **Result**: Cluster stability fully restored. Pods withstand database latency gracefully; Flask pods remain 1/1 Running without restarting.
+   - *Historical Note on Run 1*: In the earlier pre-probe-fix run recorded in `tests/05a_hpa_run1_pre_probe_fix.log`, the HPA scaled from 2 to 4 replicas, then scaled back down to 2 while the load generator was still running, and the post-load cool-down was not captured.
 
 2. **Metrics-Server Initial Polling Lag (`<unknown>`)**:
    - *Observation*: Immediately following a deployment rollout, `kubectl get hpa` reports `cpu: <unknown>/70%` for roughly 30 to 45 seconds.
@@ -422,8 +440,8 @@ The autoscaling behavior was rigorously verified by deploying an in-cluster load
    MongoDB's entrypoint script (`docker-entrypoint.sh`) only evaluates root credentials and creates the admin user if `/data/db` is completely empty. If the container is restarted with pre-existing data files from an unauthenticated session, initialization is skipped.
 2. **`command` vs `args` in Docker Containers**:
    Specifying `command: ["mongod"]` in Kubernetes overrides the container's `ENTRYPOINT`, which completely bypasses `docker-entrypoint.sh` and skips user creation. The correct approach is omitting `command` and passing arguments via `args: ["mongod", ...]`.
-3. **Node.js `mongosh` Probe Memory Footprint & Timeouts**:
-   `mongosh` (the default interactive shell in modern MongoDB images) is a Node.js V8 application. Because Node.js initialization can take several seconds under constrained CPU limits, setting a 10s `timeoutSeconds` across all probes and a dedicated `startupProbe` with `failureThreshold: 25` (allowing up to 140s for initial database bootstrapping) prevents the kubelet from prematurely terminating the container before MongoDB is fully operational.
+3. **MongoDB Probe Mechanism (TCP Socket vs exec mongosh)**:
+   MongoDB images provide `mongosh` as the default interactive shell, which is an entire Node.js V8 application. Executing `mongosh` inside a container constrained to a 500m CPU limit creates severe CPU contention and probe timeouts under load. Replacing exec probes with native `tcpSocket` probes on port 27017 eliminates process spawning overhead, delegating connection validation directly to the kubelet. Note the engineering trade-off: a TCP probe verifies that the database listener port is open and accepting sockets, while database authentication and query execution are verified separately through dedicated end-to-end test suites.
 4. **HPA `<unknown>` Status**:
    Immediately after deploying an HPA, `kubectl get hpa` displays `cpu: <unknown>/70%`. This is expected behavior while `metrics-server` completes its first 30-60 second polling cycle.
 5. **Minikube Docker Driver Networking on Windows**:

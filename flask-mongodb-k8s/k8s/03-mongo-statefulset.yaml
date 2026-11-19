@@ -51,41 +51,22 @@ spec:
             - name: mongo-storage
               mountPath: /data/db
           startupProbe:
-            exec:
-              command:
-                - sh
-                - -c
-                - >-
-                  mongosh --quiet -u "$MONGO_INITDB_ROOT_USERNAME" -p "$MONGO_INITDB_ROOT_PASSWORD"
-                  --authenticationDatabase admin --eval "db.adminCommand('ping')"
-            initialDelaySeconds: 15
+            tcpSocket:
+              port: 27017
             periodSeconds: 5
-            timeoutSeconds: 10
-            failureThreshold: 25
+            failureThreshold: 30
           livenessProbe:
-            exec:
-              command:
-                - sh
-                - -c
-                - >-
-                  mongosh --quiet -u "$MONGO_INITDB_ROOT_USERNAME" -p "$MONGO_INITDB_ROOT_PASSWORD"
-                  --authenticationDatabase admin --eval "db.adminCommand('ping')"
-            initialDelaySeconds: 10
+            tcpSocket:
+              port: 27017
             periodSeconds: 15
-            timeoutSeconds: 10
-            failureThreshold: 5
+            timeoutSeconds: 5
+            failureThreshold: 6
           readinessProbe:
-            exec:
-              command:
-                - sh
-                - -c
-                - >-
-                  mongosh --quiet -u "$MONGO_INITDB_ROOT_USERNAME" -p "$MONGO_INITDB_ROOT_PASSWORD"
-                  --authenticationDatabase admin --eval "db.adminCommand('ping')"
-            initialDelaySeconds: 10
+            tcpSocket:
+              port: 27017
             periodSeconds: 10
-            timeoutSeconds: 10
-            failureThreshold: 5
+            timeoutSeconds: 5
+            failureThreshold: 6
       volumes:
         - name: mongo-storage
           persistentVolumeClaim:

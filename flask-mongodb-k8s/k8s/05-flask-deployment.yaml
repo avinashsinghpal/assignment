@@ -51,7 +51,7 @@ spec:
               memory: 500M
           livenessProbe:
             httpGet:
-              path: /health
+              path: /
               port: 5000
             initialDelaySeconds: 15
             periodSeconds: 10

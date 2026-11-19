@@ -1,0 +1,81 @@
+================================================================================
+POST-PROBE-FIX SMOKE TEST & VERIFICATION LOG
+Test Initiated: 2026-11-19 11:20:52
+Namespace: flask-app
+Probes Configured:
+  - Flask Liveness: httpGet / (port 5000, decoupled from DB)
+  - Flask Readiness: httpGet /health (port 5000)
+  - MongoDB Probes: native tcpSocket on port 27017 (startup, liveness, readiness)
+================================================================================
+[11:20:52] 1. Starting port-forward on localhost:5000...
+
+[11:20:57] 2. Testing GET / ...
+Welcome to the Flask app! The current time is: 2026-11-19 05:50:57.242664 HTTP_STATUS:200 
+
+[11:20:57] 3. Testing POST /data with temporary JSON payload...
+{"status":"Data inserted"}  HTTP_STATUS:201 
+
+[11:20:57] 4. Testing GET /data ...
+[{"project":"running","sampleKey":"sampleValue"},{"project":"running","sampleKey":"sampleValue"},{"greeting":"Hello from live Minikube!","status":"active"},{"assignment":"kubernetes-intern","screenshot":"06"},{"probe_fix":"verified","smoke_test_id":"smoke-probe-fix-588578","timestamp":"2026-11-19 11:19:09"},{"probe_fix":"verified","smoke_test_id":"smoke-probe-fix-807085","timestamp":"2026-11-19 11:20:57"}]  HTTP_STATUS:200 
+
+[11:20:57] 5. Testing Persistence across MongoDB pod restart...
+Deleting mongodb-0 pod...
+Waiting for mongodb-0 pod to become 1/1 Ready...
+Querying GET /data after mongodb-0 restart...
+[{"project":"running","sampleKey":"sampleValue"},{"project":"running","sampleKey":"sampleValue"},{"greeting":"Hello from live Minikube!","status":"active"},{"assignment":"kubernetes-intern","screenshot":"06"},{"probe_fix":"verified","smoke_test_id":"smoke-probe-fix-588578","timestamp":"2026-11-19 11:19:09"},{"probe_fix":"verified","smoke_test_id":"smoke-probe-fix-807085","timestamp":"2026-11-19 11:20:57"}]  HTTP_STATUS:200 
+>>> PERSISTENCE CHECK: PASSED (Document smoke-probe-fix-807085 preserved after restart) <<<
+
+[11:21:07] 6. Testing MongoDB Authentication enforcement inside cluster...
+A. Executing query WITHOUT credentials (expecting MongoServerError / Unauthorized):
+kubectl : MongoServerError: Command find requires authentication
+At C:\Users\Avinash Pal\Desktop\projects\assignment\flask-mongodb-k8s\scratch_smoke_test.ps1:69 char:20
++ ... authQuery = kubectl exec mongodb-0 -n flask-app -- mongosh flask_db - ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (MongoServerErro... authentication:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+command terminated with exit code 1
+
+B. Executing query WITH Secret credentials (admin:SuperSecretPassword123):
+[
+  {
+    _id: ObjectId('6afe74ac2aeb3d43da9089de'),
+    sampleKey: 'sampleValue',
+    project: 'running'
+  },
+  {
+    _id: ObjectId('6afe74d24678a91f932463c6'),
+    sampleKey: 'sampleValue',
+    project: 'running'
+  },
+  {
+    _id: ObjectId('6afe751eeb88d376cec437f2'),
+    greeting: 'Hello from live Minikube!',
+    status: 'active'
+  },
+  {
+    _id: ObjectId('6afe7ddce96e3895e2e43397'),
+    assignment: 'kubernetes-intern',
+    screenshot: '06'
+  },
+  {
+    _id: ObjectId('6afe8dd59917313f5c0c819c'),
+    smoke_test_id: 'smoke-probe-fix-588578',
+    timestamp: '2026-11-19 11:19:09',
+    probe_fix: 'verified'
+  },
+  {
+    _id: ObjectId('6afe8e419917313f5c0c819d'),
+    smoke_test_id: 'smoke-probe-fix-807085',
+    timestamp: '2026-11-19 11:20:57',
+    probe_fix: 'verified'
+  }
+]
+
+>>> AUTHENTICATION CHECK: PASSED (Unauthorized blocked, authorized succeeds) <<<
+
+[11:21:12] Stopping port-forward process...
+
+================================================================================
+SMOKE TEST COMPLETED AT 2026-11-19 11:21:12
+================================================================================
